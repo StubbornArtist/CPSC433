@@ -11,6 +11,8 @@ public class Room {
 	public Room(String num){
 		number = num;
 		close_to = new ArrayList<String>();
+		//size is medium by default
+		size = 'm';
 	}
 	
 	public void addNeighbour(String r){

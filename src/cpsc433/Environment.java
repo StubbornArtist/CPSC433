@@ -34,13 +34,13 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	protected boolean fixedAssignments=false;
 	private LinkedHashMap<String,Person> people;
 	private LinkedHashMap<String,Room> rooms;
-	private LinkedHashMap<String, LinkedList<Person>> groups;
+	private LinkedHashMap<String, String> assignments;
 	
 	protected Environment(String name) {
 		super(name==null?"theEnvironment":name);
 		people = new LinkedHashMap<String, Person>();
 		rooms = new LinkedHashMap<String, Room>();
-		groups = new LinkedHashMap<String, LinkedList<Person>>();
+		assignments = new LinkedHashMap<String, String>();
 	}
 	
 	/**
@@ -145,15 +145,13 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_group(String p, String grp) {
 		// TODO Auto-generated method stub
-		a_person(p);
-		a_group(grp);
-		groups.get(grp).add(people.get(p));
+
 	}
 
 	@Override
 	public boolean e_group(String p, String grp) {
 		// TODO Auto-generated method stub
-		return groups.containsKey(grp) && groups.get(grp).contains();
+		return false;
 	}
 
 	@Override
@@ -219,19 +217,22 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_assign_to(String p, String room) throws Exception {
 		// TODO Auto-generated method stub
-		
+		a_person(p);
+		a_room(room);
+		assignments.put(p, room);
 	}
 
 	@Override
 	public boolean e_assign_to(String p, String room) {
 		// TODO Auto-generated method stub
-		return false;
+
+		return assignments.get(p).equals(room);
 	}
 
 	@Override
 	public void a_room(String r) {
 		// TODO Auto-generated method stub
-		if(!rooms.containsKey(r)){
+		if(!e_room(r)){
 			rooms.put(r, new Room(r));
 		}
 	}
@@ -254,7 +255,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public boolean e_close(String room, String room2) {
 		// TODO Auto-generated method stub
-		return rooms.get(room)!= null && rooms.get(room2)!= null 
+		return e_room(room) && e_room(room2)
 		&& (rooms.get(room).neighbour(room2) || rooms.get(room2).neighbour(room));
 	}
 
