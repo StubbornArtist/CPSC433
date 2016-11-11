@@ -1,6 +1,7 @@
 package cpsc433;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.TreeSet;
 
 import javax.swing.text.html.HTMLDocument.Iterator;
@@ -33,11 +34,13 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	protected boolean fixedAssignments=false;
 	private LinkedHashMap<String,Person> people;
 	private LinkedHashMap<String,Room> rooms;
+	private LinkedHashMap<String, LinkedList<Person>> groups;
 	
 	protected Environment(String name) {
 		super(name==null?"theEnvironment":name);
 		people = new LinkedHashMap<String, Person>();
 		rooms = new LinkedHashMap<String, Room>();
+		groups = new LinkedHashMap<String, LinkedList<Person>>();
 	}
 	
 	/**
@@ -66,13 +69,15 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_person(String p) {
 		// TODO Auto-generated method stub
-		
+		if(!e_person(p)){
+			people.put(p, new Person(p));
+		}
 	}
 
 	@Override
 	public boolean e_person(String p) {
 		// TODO Auto-generated method stub
-		return false;
+		return people.containsKey(p);
 	}
 
 	@Override
@@ -141,13 +146,14 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	public void a_group(String p, String grp) {
 		// TODO Auto-generated method stub
 		a_person(p);
-		people.get(p).addGroup(grp);
+		a_group(grp);
+		groups.get(grp).add(people.get(p));
 	}
 
 	@Override
 	public boolean e_group(String p, String grp) {
 		// TODO Auto-generated method stub
-		return people.get(p).inGroup(grp);
+		return groups.containsKey(grp) && groups.get(grp).contains();
 	}
 
 	@Override
