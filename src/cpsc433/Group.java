@@ -1,9 +1,11 @@
+package cpsc433;
+
 import java.util.HashSet;
 
 public class Group{
 	private String name;	// Name of the group
 	private String head;	// Name of the person who heads the group
-	private HashSet<String>() members;	// A HashSet of all the members of the group
+	private HashSet<String> members;	// A HashSet of all the members of the group
 	
 	public Group(String name){	// Constructor
 		this.name = name;
@@ -19,7 +21,7 @@ public class Group{
 		head = person;
 	}
 	
-	public String isHead(String person){	// A method that checks if the given person heads the group
+	public boolean isHead(String person){	// A method that checks if the given person heads the group
 		return head.equals(person);
 	}
 	
