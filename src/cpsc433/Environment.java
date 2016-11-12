@@ -206,13 +206,24 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_works_with(String p, TreeSet<Pair<ParamType, Object>> p2s) {
 		// TODO Auto-generated method stub
-		
+		java.util.Iterator<Pair<ParamType, Object>> it = p2s.iterator();
+		while(it.hasNext()){
+			String p2 = (String)it.next().getValue();
+			a_works_with(p, p2);
+		}
 	}
 
 	@Override
 	public boolean e_works_with(String p, TreeSet<Pair<ParamType, Object>> p2s) {
 		// TODO Auto-generated method stub
-		return false;
+		java.util.Iterator<Pair<ParamType, Object>> it = p2s.iterator();
+		while(it.hasNext()){
+			String p2 = (String)it.next().getValue();
+			if(!e_works_with(p, p2)){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
