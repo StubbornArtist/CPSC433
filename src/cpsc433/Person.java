@@ -22,4 +22,13 @@ public class Person {
 			roles.add(role);
 		}
 	}
+	
+	public boolean hasRole(String role){	// This function returns true if this person has the role specified by the argument
+		if(roles.contains(role)){	// given. 'role' should be one of "secretary", "manager", or "researcher".
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 }
