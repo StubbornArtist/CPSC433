@@ -225,8 +225,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public boolean e_assign_to(String p, String room) {
 		// TODO Auto-generated method stub
-
-		return assignments.get(p).equals(room);
+		return assignments.containsKey(p)&& assignments.get(p).equals(room);
 	}
 
 	@Override
@@ -292,7 +291,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public boolean e_large_room(String r) {
 		// TODO Auto-generated method stub
-		return rooms.get(r).getRoomSize()=='l';
+		return e_room(r)&& rooms.get(r).getRoomSize()=='l';
 	}
 
 	@Override
@@ -305,7 +304,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public boolean e_medium_room(String r) {
 		// TODO Auto-generated method stub
-		return rooms.get(r).getRoomSize() == 'm';
+		return e_room(r) && rooms.get(r).getRoomSize() == 'm';
 	}
 
 	@Override
@@ -318,7 +317,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public boolean e_small_room(String r) {
 		// TODO Auto-generated method stub
-		return rooms.get(r).getRoomSize()== 's'; 
+		return e_room(r) && rooms.get(r).getRoomSize()== 's'; 
 	}
 
 	@Override
