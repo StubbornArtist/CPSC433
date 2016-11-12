@@ -160,13 +160,19 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_group(String p, String grp) {
 		// TODO Auto-generated method stub
+		a_person(p);
+		a_group(grp);
 
+		groups.get(grp).addMember(p);
 	}
 
 	@Override
 	public boolean e_group(String p, String grp) {
 		// TODO Auto-generated method stub
-		return false;
+		if ( (!people.containsKey(p)) || (!groups.containsKey(grp)) ){
+			return false;
+		}
+		return groups.get(grp).hasMember(p);
 	}
 
 	@Override
