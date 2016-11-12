@@ -107,13 +107,26 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_manager(String p) {
 		// TODO Auto-generated method stub
-		
+		a_person(p);
+		if (!e_manager(p)){	// Check if the person 'p' has the role "manager". If not, give him the role "manager".
+			people.get(p).addRole("manager");
+		}
 	}
 
 	@Override
 	public boolean e_manager(String p) {
 		// TODO Auto-generated method stub
-		return false;
+		if (!people.containsKey(p)){	// Checks if the 'people' Linked Hash Map contains this person. If not,
+			return false;		// return false.
+		}
+		else{
+			if(people.get(p).hasRole("manager")){	// Check if the person 'p' has the role "manager". If so, return true.
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
 	}
 
 	@Override
