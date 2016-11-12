@@ -232,8 +232,8 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 		a_person(p);
 		a_person(p2);
 		
-		people.get(p).addCoWorker(people.get(p2));
-		people.get(p2).addCoWorker(people.get(p));
+		people.get(p).addCoWorker(p2);
+		people.get(p2).addCoWorker(p);
 	}
 
 	@Override
