@@ -37,8 +37,8 @@ public class Person {
 	
 	// This method accepts a person 'p' and adds them to the 'coWorker' Set via the person's name. Since this is a HashSet, it
 	// will only add the person's name if it is not already in the set.
-	public void addCoWorker(Person p){
-		coWorkers.add(p.getName());
+	public void addCoWorker(String p){
+		coWorkers.add(p);
 	}
 	
 	public boolean hasCoWorker(String p){
