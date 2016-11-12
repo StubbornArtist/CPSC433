@@ -13,7 +13,7 @@ public class Person {
 	public Person(String name){
 		this.name = name;
 		roles = new ArrayList<String>();
-		coWorkers = new Set<String>();
+		coWorkers = new HashSet<String>();
 	}
 	
 	public String getName(){
