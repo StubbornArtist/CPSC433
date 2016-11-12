@@ -35,12 +35,14 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	private LinkedHashMap<String,Person> people;
 	private LinkedHashMap<String,Room> rooms;
 	private LinkedHashMap<String, String> assignments;
+	private LinkedHashMap<String, Group> groups;
 	
 	protected Environment(String name) {
 		super(name==null?"theEnvironment":name);
 		people = new LinkedHashMap<String, Person>();
 		rooms = new LinkedHashMap<String, Room>();
 		assignments = new LinkedHashMap<String, String>();
+		groups = new LinkedHashMap<String, Group>();
 	}
 	
 	/**
@@ -356,13 +358,15 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_group(String g) {
 		// TODO Auto-generated method stub
-		
+		if (!groups.containsKey(g)){
+			groups.put(g, new Group(g));
+		}
 	}
 
 	@Override
 	public boolean e_group(String g) {
 		// TODO Auto-generated method stub
-		return false;
+		return groups.containsKey(g);
 	}
 
 	@Override
