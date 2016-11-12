@@ -126,7 +126,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public boolean e_smoker(String p) {
 		// TODO Auto-generated method stub
-		return people.get(p).smokes;
+		return e_person(p) && people.get(p).smokes;
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public boolean e_hacker(String p) {
 		// TODO Auto-generated method stub
-		return people.get(p).hacks;
+		return e_person(p) && people.get(p).hacks;
 	}
 
 	@Override
