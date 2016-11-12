@@ -218,13 +218,21 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_works_with(String p, String p2) {
 		// TODO Auto-generated method stub
+		a_person(p);
+		a_person(p2);
 		
+		people.get(p).addCoWorker(people.get(p2));
+		people.get(p2).addCoWorker(people.get(p));
 	}
 
 	@Override
 	public boolean e_works_with(String p, String p2) {
 		// TODO Auto-generated method stub
-		return false;
+		if (!people.containsKey(p)){
+			return false;
+		}
+		
+		return people.get(p).hasCoWorker(p2);
 	}
 
 	@Override
