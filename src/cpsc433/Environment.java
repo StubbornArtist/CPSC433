@@ -35,12 +35,14 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	private LinkedHashMap<String,Person> people;
 	private LinkedHashMap<String,Room> rooms;
 	private LinkedHashMap<String, String> assignments;
+	private LinkedHashMap<String, Group> groups;
 	
 	protected Environment(String name) {
 		super(name==null?"theEnvironment":name);
 		people = new LinkedHashMap<String, Person>();
 		rooms = new LinkedHashMap<String, Room>();
 		assignments = new LinkedHashMap<String, String>();
+		groups = new LinkedHashMap<String, Group>();
 	}
 	
 	/**
@@ -107,13 +109,26 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_manager(String p) {
 		// TODO Auto-generated method stub
-		
+		a_person(p);
+		if (!e_manager(p)){	// Check if the person 'p' has the role "manager". If not, give him the role "manager".
+			people.get(p).addRole("manager");
+		}
 	}
 
 	@Override
 	public boolean e_manager(String p) {
 		// TODO Auto-generated method stub
-		return false;
+		if (!people.containsKey(p)){	// Checks if the 'people' Linked Hash Map contains this person. If not,
+			return false;		// return false.
+		}
+		else{
+			if(people.get(p).hasRole("manager")){	// Check if the person 'p' has the role "manager". If so, return true.
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
 	}
 
 	@Override
@@ -145,13 +160,19 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_group(String p, String grp) {
 		// TODO Auto-generated method stub
+		a_person(p);
+		a_group(grp);
 
+		groups.get(grp).addMember(p);
 	}
 
 	@Override
 	public boolean e_group(String p, String grp) {
 		// TODO Auto-generated method stub
-		return false;
+		if ( (!people.containsKey(p)) || (!groups.containsKey(grp)) ){
+			return false;
+		}
+		return groups.get(grp).hasMember(p);
 	}
 
 	@Override
@@ -169,13 +190,17 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_heads_group(String p, String grp) {
 		// TODO Auto-generated method stub
-		
+		a_group(p, grp);
+		groups.get(grp).setHead(p);
 	}
 
 	@Override
 	public boolean e_heads_group(String p, String grp) {
 		// TODO Auto-generated method stub
-		return false;
+		if ( (!people.containsKey(p)) || (!groups.containsKey(grp)) ){
+			return false;
+		}
+		return groups.get(grp).isHead(p);
 	}
 
 	@Override
@@ -193,25 +218,44 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_works_with(String p, TreeSet<Pair<ParamType, Object>> p2s) {
 		// TODO Auto-generated method stub
-		
+		java.util.Iterator<Pair<ParamType, Object>> it = p2s.iterator();
+		while(it.hasNext()){
+			String p2 = (String)it.next().getValue();
+			a_works_with(p, p2);
+		}
 	}
 
 	@Override
 	public boolean e_works_with(String p, TreeSet<Pair<ParamType, Object>> p2s) {
 		// TODO Auto-generated method stub
-		return false;
+		java.util.Iterator<Pair<ParamType, Object>> it = p2s.iterator();
+		while(it.hasNext()){
+			String p2 = (String)it.next().getValue();
+			if(!e_works_with(p, p2)){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
 	public void a_works_with(String p, String p2) {
 		// TODO Auto-generated method stub
+		a_person(p);
+		a_person(p2);
 		
+		people.get(p).addCoWorker(p2);
+		people.get(p2).addCoWorker(p);
 	}
 
 	@Override
 	public boolean e_works_with(String p, String p2) {
 		// TODO Auto-generated method stub
-		return false;
+		if (!people.containsKey(p)){
+			return false;
+		}
+		
+		return people.get(p).hasCoWorker(p2);
 	}
 
 	@Override
@@ -323,13 +367,15 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_group(String g) {
 		// TODO Auto-generated method stub
-		
+		if (!groups.containsKey(g)){
+			groups.put(g, new Group(g));
+		}
 	}
 
 	@Override
 	public boolean e_group(String g) {
 		// TODO Auto-generated method stub
-		return false;
+		return groups.containsKey(g);
 	}
 
 	@Override
