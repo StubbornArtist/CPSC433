@@ -2,7 +2,10 @@ package cpsc433;
 
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
+
 import cpsc433.Predicate.ParamType;
+
+import java.io.*;
 
 /**
  * This is class extends {@link cpsc433.PredicateReader} just as required to 
@@ -87,7 +90,6 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 			a_person(p);
 			people.get(p).addRole("secretary");
 		}
-		
 	}
 
 	@Override
@@ -395,6 +397,38 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	public boolean e_large_project(String prj) {
 		// TODO Auto-generated method stub
 		return e_project(prj) && projects.get(prj).isLarge();
+	}
+	
+	public void createOutputFile(String fileName){
+		try{
+			FileWriter writer = new FileWriter(fileName);
+		
+			for (String name : people.keySet()){
+				writer.write("person(" + name + ")\n");
+				
+				if (people.get(name).smokes){
+					writer.write("smoker(" + name + ")\n");
+				}
+				if (people.get(name).hacks){
+					writer.write("hacker(" + name + ")\n");
+				}
+				
+				for (String role : people.get(name).roles){
+					writer.write(role + "(" + name + ")\n");
+				}
+				
+				for (String coWorker : people.get(name).coWorkers){
+					writer.write("works_with(" + name + "," + coWorker + ")\n");
+				}
+				
+				writer.write("\n"); // Create a new line so that it is easier to read.
+			}
+		
+			writer.close();
+		}
+		catch(Exception e){
+			System.out.println("IO WRITER ERROR OCCURED");
+		}
 	}
 }
 
