@@ -402,7 +402,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	public void createOutputFile(String fileName){
 		try{
 			FileWriter writer = new FileWriter(fileName);
-		
+			//person info
 			for (String name : people.keySet()){
 				writer.write("person(" + name + ")\n");
 				
@@ -423,12 +423,41 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 				
 				writer.write("\n"); // Create a new line so that it is easier to read.
 			}
-		
+			//room info
+			for (String r: rooms.keySet()){
+				writer.write("room(" + r + ")\n");
+				switch(rooms.get(r).getRoomSize()){
+					case 's': writer.write("small-room(" + r + ")\n");
+						break;
+					case 'm': writer.write("medium-room(" + r + ")\n");
+						break;
+					case 'l': writer.write("large-room(" + r + ")\n");
+						break;
+				}
+				for(String n: rooms.get(r).close_to){
+					writer.write("close-to(" + r + "," + n + ")\n");
+				}
+				writer.write("\n");
+			}
+			//assign-to info
+			for(String p: assignments.keySet()){
+				writer.write("assign-to(" + p + ","+ assignments.get(p)+")\n");
+			}
+			//group info
+			for(String g: groups.keySet()){
+				writer.write("group("+g+")\n");
+				writer.write("heads-group(" + groups.get(g).getHead() + "," + g + ")\n");
+				for(String member: groups.get(g).members){
+					writer.write("group(" + member + "," + g +")\n");
+				}
+				writer.write("\n");
+			}
 			writer.close();
 		}
 		catch(Exception e){
 			System.out.println("IO WRITER ERROR OCCURED");
 		}
 	}
+	
 }
 
