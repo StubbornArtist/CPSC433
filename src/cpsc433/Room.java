@@ -1,6 +1,7 @@
 package cpsc433;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 public class Room {
 	
@@ -31,4 +32,8 @@ public class Room {
 		return close_to.contains(room);
 	}
 
+	public Iterator closeToIterator(){
+		java.util.Iterator<String> it = close_to.iterator();
+		return it;
+	}
 }
