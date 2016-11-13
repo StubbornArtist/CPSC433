@@ -33,3 +33,4 @@ public class Group{
 		return members.contains(person);
 	}
 }
+

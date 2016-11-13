@@ -1,11 +1,7 @@
 package cpsc433;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.TreeSet;
-
-import javax.swing.text.html.HTMLDocument.Iterator;
-
 import cpsc433.Predicate.ParamType;
 
 /**
@@ -87,25 +83,32 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_secretary(String p) {
 		// TODO Auto-generated method stub
+		if(!e_secretary(p)){
+			a_person(p);
+			people.get(p).addRole("secretary");
+		}
 		
 	}
 
 	@Override
 	public boolean e_secretary(String p) {
 		// TODO Auto-generated method stub
-		return false;
+		return e_person(p) && people.get(p).hasRole("secretary");
 	}
 
 	@Override
 	public void a_researcher(String p) {
 		// TODO Auto-generated method stub
-		
+		if(!e_researcher(p)){
+			a_person(p);
+			people.get(p).addRole("researcher");
+		}
 	}
 
 	@Override
 	public boolean e_researcher(String p) {
 		// TODO Auto-generated method stub
-		return false;
+		return e_person(p) && people.get(p).hasRole("researcher");
 	}
 
 	@Override
