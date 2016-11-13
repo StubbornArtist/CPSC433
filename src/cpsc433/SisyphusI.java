@@ -51,6 +51,8 @@ public class SisyphusI {
 
 		out = fromFile+".out";
 
+		env.createOutputFile(out);
+		
 		createShutdownHook();
 
 		if (args.length>1) { // using command-line arguments
