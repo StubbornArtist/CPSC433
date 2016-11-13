@@ -402,55 +402,12 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	public void createOutputFile(String fileName){
 		try{
 			FileWriter writer = new FileWriter(fileName);
-			//person info
-			for (String name : people.keySet()){
-				writer.write("person(" + name + ")\n");
-				
-				if (people.get(name).smokes){
-					writer.write("smoker(" + name + ")\n");
-				}
-				if (people.get(name).hacks){
-					writer.write("hacker(" + name + ")\n");
-				}
-				
-				for (String role : people.get(name).roles){
-					writer.write(role + "(" + name + ")\n");
-				}
-				
-				for (String coWorker : people.get(name).coWorkers){
-					writer.write("works_with(" + name + "," + coWorker + ")\n");
-				}
-				
-				writer.write("\n"); // Create a new line so that it is easier to read.
-			}
-			//room info
-			for (String r: rooms.keySet()){
-				writer.write("room(" + r + ")\n");
-				switch(rooms.get(r).getRoomSize()){
-					case 's': writer.write("small-room(" + r + ")\n");
-						break;
-					case 'm': writer.write("medium-room(" + r + ")\n");
-						break;
-					case 'l': writer.write("large-room(" + r + ")\n");
-						break;
-				}
-				for(String n: rooms.get(r).close_to){
-					writer.write("close-to(" + r + "," + n + ")\n");
-				}
-				writer.write("\n");
-			}
-			//assign-to info
+			writer.write(personInfo());
+			writer.write(roomInfo());
+			writer.write(groupInfo());
+			writer.write(projectInfo());
 			for(String p: assignments.keySet()){
 				writer.write("assign-to(" + p + ","+ assignments.get(p)+")\n");
-			}
-			//group info
-			for(String g: groups.keySet()){
-				writer.write("group("+g+")\n");
-				writer.write("heads-group(" + groups.get(g).getHead() + "," + g + ")\n");
-				for(String member: groups.get(g).members){
-					writer.write("group(" + member + "," + g +")\n");
-				}
-				writer.write("\n");
 			}
 			writer.close();
 		}
@@ -459,5 +416,74 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 		}
 	}
 	
+	public String personInfo(){
+		String info = "";
+		for (String name : people.keySet()){
+			info +="person(" + name + ")\n";
+			if (people.get(name).smokes){
+				info+="smoker(" + name + ")\n";
+			}
+			if (people.get(name).hacks){
+				info+="hacker(" + name + ")\n";
+			}
+			for (String role : people.get(name).roles){
+				info+=role + "(" + name + ")\n";
+			}
+			
+			for (String coWorker : people.get(name).coWorkers){
+				info+="works_with(" + name + "," + coWorker + ")\n";
+			}
+			info+="\n"; // Create a new line so that it is easier to read.
+		}
+		return info;
+	}
+	
+	public String roomInfo(){
+		String info = "";
+		for (String r: rooms.keySet()){
+			info+="room(" + r + ")\n";
+			switch(rooms.get(r).getRoomSize()){
+				case 's': info+="small-room(" + r + ")\n";
+					break;
+				case 'm': info+="medium-room(" + r + ")\n";
+					break;
+				case 'l': info+="large-room(" + r + ")\n";
+					break;
+			}
+			for(String n: rooms.get(r).close_to){
+				info+="close-to(" + r + "," + n + ")\n";
+			}
+			info+="\n";
+		}
+		
+		return info;
+	}
+	
+	public String groupInfo(){
+		String info = "";
+		for(String g: groups.keySet()){
+			info+="group("+g+")\n";
+			info+="heads-group(" + groups.get(g).getHead() + "," + g + ")\n";
+			for(String member: groups.get(g).members){
+				info+="group(" + member + "," + g +")\n";
+			}
+			info+="\n";
+		}	
+		return info;
+	}
+	
+	public String projectInfo(){
+		String info= "";
+		for(String p: projects.keySet()){
+			info+="project(" +p+")\n";
+			info+="heads-project(" +projects.get(p).getHead()+ "," + p +")\n";
+			info += (projects.get(p).isLarge())? "large-project(" +p+ ")\n": "";
+			for(String member: projects.get(p).members){
+				info+="project(" +member +"," + p + ")\n";
+			}
+			info+="\n";
+		}
+		return info;
+	}
 }
 
