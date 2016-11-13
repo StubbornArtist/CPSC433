@@ -1,24 +1,22 @@
 package cpsc433;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Room {
 	
 	public String number;
 	private char size;
-	private ArrayList<String> close_to;
+	private HashSet<String> close_to;
 	
 	public Room(String num){
 		number = num;
-		close_to = new ArrayList<String>();
+		close_to = new HashSet<String>();
 		//size is medium by default
 		size = 'm';
 	}
 	
 	public void addNeighbour(String r){
-		if(!close_to.contains(r)){
-			close_to.add(r);
-		}
+		close_to.add(r);
 	}
 	
 	public void setRoomSize(char size){
