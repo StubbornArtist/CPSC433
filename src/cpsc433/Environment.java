@@ -2,10 +2,9 @@ package cpsc433;
 
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
-
 import cpsc433.Predicate.ParamType;
-
 import java.io.*;
+import javax.swing.text.html.HTMLDocument.Iterator;
 
 /**
  * This is class extends {@link cpsc433.PredicateReader} just as required to 
@@ -426,12 +425,13 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 			if (people.get(name).hacks){
 				info+="hacker(" + name + ")\n";
 			}
-			for (String role : people.get(name).roles){
-				info+=role + "(" + name + ")\n";
+			java.util.Iterator<String> it = people.get(name).rolesIterator();
+			while(it.hasNext()){
+				info+= it.next() + "(" + name+ ")\n";
 			}
-			
-			for (String coWorker : people.get(name).coWorkers){
-				info+="works_with(" + name + "," + coWorker + ")\n";
+			it = people.get(name).coWorkerIterator();
+			while(it.hasNext()){
+				info+="works_with(" + name + "," + it.next() + ")\n";
 			}
 			info+="\n"; // Create a new line so that it is easier to read.
 		}
@@ -450,8 +450,9 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 				case 'l': info+="large-room(" + r + ")\n";
 					break;
 			}
-			for(String n: rooms.get(r).close_to){
-				info+="close-to(" + r + "," + n + ")\n";
+			java.util.Iterator<String> it = rooms.get(r).closeToIterator();
+			while(it.hasNext()){
+				info+="close(" + r + "," + it.next() + ")\n";
 			}
 			info+="\n";
 		}
@@ -464,8 +465,10 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 		for(String g: groups.keySet()){
 			info+="group("+g+")\n";
 			info+="heads-group(" + groups.get(g).getHead() + "," + g + ")\n";
-			for(String member: groups.get(g).members){
-				info+="group(" + member + "," + g +")\n";
+			
+			java.util.Iterator <String> it = groups.get(g).membersIterator();
+			while(it.hasNext()){
+				info+= "group(" + it.next() + "," + g +")\n";
 			}
 			info+="\n";
 		}	
@@ -478,8 +481,10 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 			info+="project(" +p+")\n";
 			info+="heads-project(" +projects.get(p).getHead()+ "," + p +")\n";
 			info += (projects.get(p).isLarge())? "large-project(" +p+ ")\n": "";
-			for(String member: projects.get(p).members){
-				info+="project(" +member +"," + p + ")\n";
+			
+			java.util.Iterator<String> it = projects.get(p).membersIterator();
+			while(it.hasNext()){
+				info+="project(" + it.next() +"," + p + ")\n";
 			}
 			info+="\n";
 		}

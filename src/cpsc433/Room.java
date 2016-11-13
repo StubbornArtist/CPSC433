@@ -7,7 +7,7 @@ public class Room {
 	
 	private String number;
 	private char size;
-	public HashSet<String> close_to;
+	private HashSet<String> close_to;
 	
 	public Room(String num){
 		number = num;
@@ -32,7 +32,7 @@ public class Room {
 		return close_to.contains(room);
 	}
 
-	public Iterator closeToIterator(){
+	public Iterator<String> closeToIterator(){
 		java.util.Iterator<String> it = close_to.iterator();
 		return it;
 	}

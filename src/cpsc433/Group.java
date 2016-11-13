@@ -1,11 +1,12 @@
 package cpsc433;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 public class Group{
 	private String name;	// Name of the group
 	private String head;	// Name of the person who heads the group
-	public HashSet<String> members;	// A HashSet of all the members of the group
+	private HashSet<String> members;	// A HashSet of all the members of the group
 	
 	public Group(String name){	// Constructor
 		this.name = name;
@@ -36,7 +37,7 @@ public class Group{
 		return members.contains(person);
 	}
 	
-	public Iterator membersIterator(){
+	public Iterator<String> membersIterator(){
 		java.util.Iterator<String> it = members.iterator();
 		return it;
 	}
