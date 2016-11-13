@@ -36,6 +36,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	private LinkedHashMap<String,Room> rooms;
 	private LinkedHashMap<String, String> assignments;
 	private LinkedHashMap<String, Group> groups;
+	private LinkedHashMap<String, Project> projects;
 	
 	protected Environment(String name) {
 		super(name==null?"theEnvironment":name);
@@ -43,6 +44,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 		rooms = new LinkedHashMap<String, Room>();
 		assignments = new LinkedHashMap<String, String>();
 		groups = new LinkedHashMap<String, Group>();
+		projects = new LinkedHashMap<String, Project>();
 	}
 	
 	/**
@@ -118,17 +120,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public boolean e_manager(String p) {
 		// TODO Auto-generated method stub
-		if (!people.containsKey(p)){	// Checks if the 'people' Linked Hash Map contains this person. If not,
-			return false;		// return false.
-		}
-		else{
-			if(people.get(p).hasRole("manager")){	// Check if the person 'p' has the role "manager". If so, return true.
-				return true;
-			}
-			else{
-				return false;
-			}
-		}
+		return e_person(p) && people.get(p).hasRole("manager");
 	}
 
 	@Override
@@ -197,10 +189,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public boolean e_heads_group(String p, String grp) {
 		// TODO Auto-generated method stub
-		if ( (!people.containsKey(p)) || (!groups.containsKey(grp)) ){
-			return false;
-		}
-		return groups.get(grp).isHead(p);
+		return e_person(p) && e_group(grp) && groups.get(grp).isHead(p);
 	}
 
 	@Override
@@ -251,11 +240,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public boolean e_works_with(String p, String p2) {
 		// TODO Auto-generated method stub
-		if (!people.containsKey(p)){
-			return false;
-		}
-		
-		return people.get(p).hasCoWorker(p2);
+		return e_person(p) && e_person(p2) && people.get(p).hasCoWorker(p2);
 	}
 
 	@Override
@@ -381,13 +366,15 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_project(String p) {
 		// TODO Auto-generated method stub
-		
+		if(!e_project(p)){
+			projects.put(p, new Project(p));
+		}
 	}
 
 	@Override
 	public boolean e_project(String p) {
 		// TODO Auto-generated method stub
-		return false;
+		return projects.containsKey(p);
 	}
 
 	@Override
