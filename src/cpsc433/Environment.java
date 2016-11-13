@@ -170,13 +170,16 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_project(String p, String prj) {
 		// TODO Auto-generated method stub
+		a_person(p);
+		a_project(prj);
 		
+		projects.get(prj).addMember(p);
 	}
 
 	@Override
 	public boolean e_project(String p, String prj) {
 		// TODO Auto-generated method stub
-		return false;
+		return e_person(p) && e_project(prj) && projects.get(prj).hasMember(p);
 	}
 
 	@Override
