@@ -7,8 +7,8 @@ public class Person {
 	private String name;
 	public boolean smokes;
 	public boolean hacks;
-	private ArrayList<String> roles;
-	private HashSet<String> coWorkers;
+	public ArrayList<String> roles;
+	public HashSet<String> coWorkers;
 	
 	public Person(String name){
 		this.name = name;
