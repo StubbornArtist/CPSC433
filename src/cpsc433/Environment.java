@@ -383,12 +383,14 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	@Override
 	public void a_large_project(String prj) {
 		// TODO Auto-generated method stub
+		a_project(prj);
+		projects.get(prj).setLargeProj(true);
 	}
 
 	@Override
 	public boolean e_large_project(String prj) {
 		// TODO Auto-generated method stub
-		return false;
+		return e_project(prj) && projects.get(prj).isLarge();
 	}
 }
 
