@@ -35,5 +35,10 @@ public class Group{
 	public boolean hasMember(String person){	// Evaluates if the given person is apart of the 'members' HashSet
 		return members.contains(person);
 	}
+	
+	public Iterator membersIterator(){
+		java.util.Iterator<String> it = members.iterator();
+		return it;
+	}
 }
 
