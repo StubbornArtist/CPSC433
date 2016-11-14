@@ -189,7 +189,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	public void a_heads_group(String p, String grp) {
 		// TODO Auto-generated method stub
 		a_group(p, grp);
-		groups.get(grp).setHead(p);
+		groups.get(grp).addHead(p);
 	}
 
 	@Override
@@ -202,7 +202,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	public void a_heads_project(String p, String prj) {
 		// TODO Auto-generated method stub
 		a_project(p, prj);
-		projects.get(prj).setHead(p);
+		projects.get(prj).addHead(p);
 	}
 
 	@Override
@@ -463,9 +463,11 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 		String info = "";
 		for(String g: groups.keySet()){
 			info+="group("+g+")\n";
-			info+="heads-group(" + groups.get(g).getHead() + "," + g + ")\n";
-			
-			java.util.Iterator <String> it = groups.get(g).membersIterator();
+			java.util.Iterator<String> it = groups.get(g).getHeadIterator();
+			while(it.hasNext()){
+				info += "heads-group(" + it.next() + "," + g + ")\n";
+			}
+			it = groups.get(g).membersIterator();
 			while(it.hasNext()){
 				info+= "group(" + it.next() + "," + g +")\n";
 			}
@@ -478,10 +480,13 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 		String info= "";
 		for(String p: projects.keySet()){
 			info+="project(" +p+")\n";
-			info+="heads-project(" +projects.get(p).getHead()+ "," + p +")\n";
+			java.util.Iterator<String> it = projects.get(p).getHeadIterator();
+			while(it.hasNext()){
+				info += "heads-group(" + it.next() + "," + p + ")\n";
+			}
 			info += (projects.get(p).isLarge())? "large-project(" +p+ ")\n": "";
 			
-			java.util.Iterator<String> it = projects.get(p).membersIterator();
+			it = projects.get(p).membersIterator();
 			while(it.hasNext()){
 				info+="project(" + it.next() +"," + p + ")\n";
 			}
