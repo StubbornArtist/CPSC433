@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import cpsc433.Predicate.ParamType;
 import java.io.*;
-import javax.swing.text.html.HTMLDocument.Iterator;
 
 /**
  * This is class extends {@link cpsc433.PredicateReader} just as required to 
