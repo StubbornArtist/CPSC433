@@ -430,7 +430,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 			}
 			it = people.get(name).coWorkerIterator();
 			while(it.hasNext()){
-				info+="works_with(" + name + "," + it.next() + ")\n";
+				info+="works-with(" + name + "," + it.next() + ")\n";
 			}
 			info+="\n"; // Create a new line so that it is easier to read.
 		}
@@ -482,7 +482,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 			info+="project(" +p+")\n";
 			java.util.Iterator<String> it = projects.get(p).getHeadIterator();
 			while(it.hasNext()){
-				info += "heads-group(" + it.next() + "," + p + ")\n";
+				info += "heads-project(" + it.next() + "," + p + ")\n";
 			}
 			info += (projects.get(p).isLarge())? "large-project(" +p+ ")\n": "";
 			
