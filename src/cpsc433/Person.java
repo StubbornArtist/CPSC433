@@ -10,7 +10,7 @@ public class Person {
 	private HashSet<String> coWorkers;
 	
 	public Person(String name){
-		this.name = name;
+		name = name;
 		roles = new HashSet<String>();
 		coWorkers = new HashSet<String>();
 	}

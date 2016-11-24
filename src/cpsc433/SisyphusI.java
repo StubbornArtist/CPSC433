@@ -1,5 +1,10 @@
 package cpsc433;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+
 /**
  * This is the main class for the SysiphusI assignment.  It's main function is to
  * interpret the command line.
@@ -116,9 +121,39 @@ public class SisyphusI {
 	 * @param timeLimit A time limit in milliseconds.
 	 */
 	protected void doSearch(Environment env, long timeLimit) {
-		System.out.println("Would do a search for "+timeLimit+" milliseconds here, but it's not defined yet.");
+		createFirstGen(env, 1000);
 	}
 	
+	private void createFirstGen(Environment env, int genSize) {
+		Random rand = new Random();
+		Generation genOne = new Generation(0);
+		//A generation of genSize facts
+		for(int i=0; i<genSize; i++){
+			LinkedHashMap<String, Assignment> assignment = new LinkedHashMap<String, Assignment>();
+			LinkedHashMap<String, Person> people = env.getPeople();
+			LinkedHashMap<String, Room> rooms = env.getRooms();
+			Room[] roomArray = (Room[]) rooms.values().toArray();
+			
+			//Assign each person a random room
+			for(Map.Entry<String, Person> entry: people.entrySet()){
+				//The person
+				Person personVal = entry.getValue();
+				//the room
+				Room roomVal = roomArray[rand.nextInt(roomArray.length)];
+				
+				//The keys are the room numbers
+				if(assignment.containsKey(roomVal.getRoomNumber())){
+					assignment.get(roomVal.getRoomNumber()).addPerson(personVal);
+				}
+				else{
+					assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, personVal));
+					
+				}
+			}
+			genOne.addFact(assignment);
+		}
+	}
+
 	protected void printResults() {
 		System.out.println("Would print results here, but the search isn't implemented yet.");
 	}

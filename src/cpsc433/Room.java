@@ -20,6 +20,10 @@ public class Room {
 		close_to.add(r);
 	}
 	
+	public String getRoomNumber(){
+		return this.number;
+	}
+	
 	public void setRoomSize(char size){
 		this.size = size;
 	}
