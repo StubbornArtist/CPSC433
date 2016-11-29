@@ -6,15 +6,16 @@ import java.util.LinkedHashMap;
 public class Generation {
 	
 	public int genNumber;
-	public HashSet<LinkedHashMap<String, Assignment>> facts;
+	public HashSet<Node> facts;
 
 	
 	public Generation(int number){
 		this.genNumber = number;
-		this.facts = new HashSet<LinkedHashMap<String, Assignment>>();
+		this.facts = new HashSet<Node>();
 	}
 	
 	public void addFact(LinkedHashMap<String, Assignment> a){
-		this.facts.add(a);
+		Node nodeN = new Node(a);
+		this.facts.add(nodeN);
 	}
 }

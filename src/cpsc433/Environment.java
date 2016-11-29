@@ -33,7 +33,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	protected boolean fixedAssignments = false;
 	private LinkedHashMap<String, Person> people;
 	private LinkedHashMap<String, Room> rooms;
-	private LinkedHashMap<String, String> assignments;
+	public LinkedHashMap<String, String> assignments;
 	private LinkedHashMap<String, Group> groups;
 	private LinkedHashMap<String, Project> projects;
 
