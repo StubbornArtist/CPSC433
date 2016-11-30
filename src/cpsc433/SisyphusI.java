@@ -3,7 +3,6 @@ package cpsc433;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 
 /**
@@ -139,6 +138,7 @@ public class SisyphusI {
 		// A generation of genSize facts
 		for (int i = 0; i < genSize; i++) {
 			LinkedHashMap<String, Assignment> assignment = new LinkedHashMap<String, Assignment>();
+			LinkedHashMap<String, String> StringAssigns = new LinkedHashMap<String, String>();
 			LinkedHashMap<String, Person> people = env.getPeople();
 			LinkedHashMap<String, Room> rooms = env.getRooms();
 			Room[] roomArray = (Room[]) rooms.values().toArray();
@@ -163,11 +163,14 @@ public class SisyphusI {
 				// The keys are the room numbers
 				if (assignment.containsKey(roomVal.getRoomNumber())) {
 					assignment.get(roomVal.getRoomNumber()).addPerson(personVal);
+					StringAssigns.put(personVal.name, roomVal.getRoomNumber());
 				} else {
 					assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, personVal));
+					StringAssigns.put(personVal.name, roomVal.getRoomNumber());
+					
 				}
 			}
-			genOne.addFact(assignment);
+			genOne.addFact(assignment,StringAssigns);
 		}
 	}
 

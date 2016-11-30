@@ -47,4 +47,8 @@ public class Assignment {
 		
 	}
 	
+	public boolean contains(Person p){
+		return people.contains(p);
+	}
+	
 }

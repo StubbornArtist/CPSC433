@@ -14,8 +14,9 @@ public class Generation {
 		this.facts = new HashSet<Node>();
 	}
 	
-	public void addFact(LinkedHashMap<String, Assignment> a){
+	public void addFact(LinkedHashMap<String, Assignment> a, LinkedHashMap<String, String> b){
 		Node nodeN = new Node(a);
+		nodeN.putStrings(b);
 		this.facts.add(nodeN);
 	}
 }
