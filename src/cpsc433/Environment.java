@@ -35,7 +35,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	private LinkedHashMap<String, Room> rooms;
 	public LinkedHashMap<String, String> assignments;
 	private LinkedHashMap<String, Group> groups;
-	private LinkedHashMap<String, Project> projects;
+	public LinkedHashMap<String, Project> projects;
 
 	public LinkedHashMap<String, Person> getPeople(){
 		return this.people;

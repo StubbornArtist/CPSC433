@@ -3,20 +3,16 @@ package cpsc433;
 import java.util.HashSet;
 
 public class Person {
-	public String name;
+	private String name;
 	public boolean smokes;
 	public boolean hacks;
 	private HashSet<String> roles;
 	private HashSet<String> coWorkers;
 	
 	public Person(String name){
-		this.name = name;
+		name = name;
 		roles = new HashSet<String>();
 		coWorkers = new HashSet<String>();
-	}
-	
-	public String getName(){
-		return name;
 	}
 	
 	public void addRole(String role){
@@ -50,14 +46,7 @@ public class Person {
 		return coWorkers.iterator();
 	}
 	
-	
-	@Override 
-	public boolean equals(Object o){
-		if(o == null) return false;
-		if(!(o instanceof Person)) return false;
-		Person p = (Person) o;
-		if(!p.getName().equals(this.name)) return false;
-		
-		return true;
+	public String toString(){
+		return name;
 	}
 }
