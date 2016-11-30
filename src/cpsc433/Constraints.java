@@ -1,25 +1,29 @@
 package cpsc433;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 public class Constraints {
 
+	private Environment environment;
 	public Node currentNode;
-	public Constraints(Node n){
+
+	public Constraints(Node n, Environment env) {
 		currentNode = n;
-		if (!hardConstraint1(currentNode.Assignments)){
+		this.environment = environment;
+		if (!hardConstraint1(currentNode.Assignments)) {
 			currentNode.score = 0;
 			return;
 		}
-		if (!hardConstraint2(currentNode.Assignments)){
+		if (!hardConstraint2(currentNode.Assignments)) {
 			currentNode.score = 0;
 			return;
 		}
-		if (!hardConstraint3(currentNode.Assignments)){
+		if (!hardConstraint3(currentNode.Assignments)) {
 			currentNode.score = 0;
 			return;
 		}
-		if (!hardConstraint4(currentNode.Assignments)){
+		if (!hardConstraint4(currentNode.Assignments)) {
 			currentNode.score = 0;
 			return;
 		}
@@ -52,7 +56,12 @@ public class Constraints {
 	}
 
 	public boolean hardConstraint3(LinkedHashMap<String, Assignment> a) {
-		return false;
+		for (Assignment assn : a.values()) {
+			if (assn.getPeople().size() > 2) {
+				return false;
+			}
+		}
+		return true;
 
 	}
 
@@ -112,12 +121,88 @@ public class Constraints {
 	}
 
 	public int softConstraint11(LinkedHashMap<String, Assignment> a) {
-		return 0;
+		int score = 0;
+		HashSet<Person> checked = new HashSet<Person>();
+		// For each assignment
+		for (Assignment assn : a.values()) {
+			HashSet<Person> People = assn.getPeople();
+			// For each person on that assignment
+			for (Person per : People) {
+				// If a person is a smoker
+				if (per.smokes) {
+					// Check all others in that room
+					for (Person per2 : People) {
+						// Have we already accounted for this person?
+						if (checked.contains(per2)) {
+							continue;
+						}
+						// I don't check if we're comparing to ourself because
+						// this will always fail if we are.
+						if (!per2.smokes) {
+							// decrement our score
+							score -= 50;
+						}
+					}
+				}
+				// adding ourselves to checked so we don't double our score
+				// unintentionally
+				checked.add(per);
+			}
+		}
+
+		return score;
 
 	}
 
 	public int softConstraint12(LinkedHashMap<String, Assignment> a) {
-		return 0;
+		int score = 0;
+		LinkedHashMap<String, Project> projects = environment.projects;
+		Project currProject = null;
+
+		HashSet<Person> checked = new HashSet<Person>();
+		// For each assignment
+		for (Assignment assn : a.values()) {
+			HashSet<Person> People = assn.getPeople();
+			// For each person on that assignment
+			for (Person per : People) {
+				// grab their project and set currProject to it.
+				for (Project proj : projects.values()) {
+					if (proj.hasMember(per.toString())) {
+						currProject = proj;
+						break;
+					}
+				}
+				// Check all others in that room
+				for (Person per2 : People) {
+					// Have we already accounted for this person?
+					if (checked.contains(per2)) {
+						continue;
+					}
+					//is this person us?
+					if(per2 == per){
+						continue;
+					}
+					Project tempProj = null;
+					// grab this new persons project
+					for (Project proj : projects.values()) {
+						if (proj.hasMember(per2.toString())) {
+							tempProj = proj;
+							break;
+						}
+					}
+					//and compare projects
+					if (tempProj != null && currProject != null && tempProj == currProject) {
+						// decrement our score
+						score -= 7;
+					}
+				}
+				// adding ourselves to checked so we don't double our score
+				// unintentionally
+				checked.add(per);
+			}
+		}
+
+		return score;
 
 	}
 

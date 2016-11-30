@@ -45,4 +45,8 @@ public class Person {
 	public java.util.Iterator<String> coWorkerIterator(){
 		return coWorkers.iterator();
 	}
+	
+	public String toString(){
+		return name;
+	}
 }
