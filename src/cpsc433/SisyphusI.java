@@ -178,7 +178,7 @@ public class SisyphusI {
 				}
 			}
 			genOne.addFact(assignment,StringAssigns);
-			}
+		}
 		return genOne;
 	}
 

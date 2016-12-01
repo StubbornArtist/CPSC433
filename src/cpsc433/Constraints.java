@@ -38,7 +38,8 @@ public class Constraints {
 		return true;
 
 	}
-
+	//All heads of groups should have a large office
+	//penalty of -40
 	public int softConstraint1(LinkedHashMap<String, String> a, Environment e) {
 		boolean allLarge = true;
 		Iterator<String> heads;
@@ -49,7 +50,7 @@ public class Constraints {
 				while(heads.hasNext()){
 					if(!e.e_large_room(a.get(heads.next()))){
 						allLarge = false;
-						continue;
+						break;
 					}	
 				}
 			}	
@@ -58,7 +59,8 @@ public class Constraints {
 			}
 		return -40;
 	}
-
+	//All heads of groups should be close to all members of their group
+	//penalty of -2
 	public int softConstraint2(LinkedHashMap<String, String> a, Environment e) {
 		boolean allClose = true;
 		Iterator<String> heads;
@@ -75,7 +77,7 @@ public class Constraints {
 				while(members.hasNext()){
 					if(!e.e_close(a.get(head), a.get(members.next()))){
 						allClose = false;
-						continue;
+						break;
 					}
 					
 				}
@@ -122,7 +124,6 @@ public class Constraints {
 				while(coworkers.hasNext()){
 					String coworker = coworkers.next();
 					if(a.get(person).equals(a.get(coworker)) && !e.e_secretary(coworker)){
-						
 						return -5;
 					}
 				}
