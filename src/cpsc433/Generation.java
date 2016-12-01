@@ -1,6 +1,7 @@
 package cpsc433;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 public class Generation {
@@ -19,4 +20,16 @@ public class Generation {
 		nodeN.putStrings(b);
 		this.facts.add(nodeN);
 	}
+	@Override
+	public String toString(){
+		Iterator<Node> nodes = facts.iterator();
+		String gen = "Generation" + genNumber + "\n{";
+		while(nodes.hasNext()){
+			gen += nodes.next();
+			if(nodes.hasNext()) gen+=",\n";
+		}
+		gen+="}";
+		return gen;
+	}
+			
 }

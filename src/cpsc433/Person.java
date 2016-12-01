@@ -3,14 +3,14 @@ package cpsc433;
 import java.util.HashSet;
 
 public class Person {
-	private String name;
+	public String name;
 	public boolean smokes;
 	public boolean hacks;
 	private HashSet<String> roles;
 	private HashSet<String> coWorkers;
 	
 	public Person(String name){
-		name = name;
+		this.name = name;
 		roles = new HashSet<String>();
 		coWorkers = new HashSet<String>();
 	}
@@ -45,7 +45,7 @@ public class Person {
 	public java.util.Iterator<String> coWorkerIterator(){
 		return coWorkers.iterator();
 	}
-	
+	@Override
 	public String toString(){
 		return name;
 	}

@@ -40,4 +40,9 @@ public class Room {
 		java.util.Iterator<String> it = close_to.iterator();
 		return it;
 	}
+	@Override
+	public String toString(){
+		
+		return number;
+	}
 }

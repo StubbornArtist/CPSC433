@@ -1,8 +1,8 @@
 package cpsc433;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -37,8 +37,8 @@ public class SisyphusI {
 	}
 
 	protected final String[] args;
-	protected String out;
 	protected Environment env;
+	protected Constraints con;
 
 	public SisyphusI(String[] args) {
 		this.args = args;
@@ -47,6 +47,7 @@ public class SisyphusI {
 
 	protected void run() {
 		env = getEnvironment();
+		con = getConstraints();
 
 		String fromFile = null;
 
@@ -56,14 +57,15 @@ public class SisyphusI {
 		} else {
 			printSynopsis();
 		}
-
-		out = fromFile + ".out";
-
-		env.createOutputFile(out);
-
+		
 		createShutdownHook();
 
 		if (args.length > 1) { // using command-line arguments
+			
+			if(args[1].equals("-1")){
+				System.out.println("Creating output file");
+				env.createOutputFile(fromFile + ".out");
+			}
 			runCommandLineMode();
 			killShutdownHook();
 		} else { // using interactive mode
@@ -82,6 +84,9 @@ public class SisyphusI {
 	 */
 	protected Environment getEnvironment() {
 		return Environment.get();
+	}
+	protected Constraints getConstraints(){
+		return Constraints.getInstance();
 	}
 
 	protected void printSynopsis() {
@@ -129,49 +134,52 @@ public class SisyphusI {
 	 *            A time limit in milliseconds.
 	 */
 	protected void doSearch(Environment env, long timeLimit) {
-		createFirstGen(env, 1000);
+		Generation one = createFirstGen(env, 1000);
+		//System.out.println(one.toString());
+		Iterator<Node> nodes = one.facts.iterator();
+		while(nodes.hasNext()){
+			Node n = nodes.next();
+			System.out.println(n);
+			System.out.println(con.eval(nodes.next(), env));
+		}
 	}
 
-	private void createFirstGen(Environment env, int genSize) {
+	private Generation createFirstGen(Environment env, int genSize) {
 		Random rand = new Random();
 		Generation genOne = new Generation(0);
 		// A generation of genSize facts
 		for (int i = 0; i < genSize; i++) {
 			LinkedHashMap<String, Assignment> assignment = new LinkedHashMap<String, Assignment>();
 			LinkedHashMap<String, String> StringAssigns = new LinkedHashMap<String, String>();
-			LinkedHashMap<String, Person> people = env.getPeople();
+			Iterator<Person> people = env.getPeople().values().iterator();
 			LinkedHashMap<String, Room> rooms = env.getRooms();
-			Room[] roomArray = (Room[]) rooms.values().toArray();
-
-			ArrayList<String> PeopleAssigned = new ArrayList<String>();
+			ArrayList<Room> roomList = new ArrayList<Room>(rooms.values());
 
 			// Assign each person a random room
-			for (Map.Entry<String, Person> entry : people.entrySet()) {
-				// The person
-				Person personVal = entry.getValue();
+			while(people.hasNext()){
+				Person personVal = people.next();
 				// the room
-				Room roomVal = roomArray[rand.nextInt(roomArray.length)];
-				
-				
+				Room roomVal;
 				//Is this person hard-assigned a room?
 				//If they are, the roomVal becomes the room that they are assigned to
-				if (env.assignments.containsKey(personVal)) 
-					roomVal = rooms.get(env.assignments.get(personVal));
-				
-				
 				//no means we assign them the random room	
+				if (env.assignments.containsKey(personVal)){
+					roomVal = rooms.get(env.assignments.get(personVal));
+				}else{
+					 roomVal = roomList.get(rand.nextInt(roomList.size()));
+				}	
 				// The keys are the room numbers
 				if (assignment.containsKey(roomVal.getRoomNumber())) {
 					assignment.get(roomVal.getRoomNumber()).addPerson(personVal);
 					StringAssigns.put(personVal.name, roomVal.getRoomNumber());
 				} else {
 					assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, personVal));
-					StringAssigns.put(personVal.name, roomVal.getRoomNumber());
-					
+					StringAssigns.put(personVal.name, roomVal.getRoomNumber());	
 				}
 			}
 			genOne.addFact(assignment,StringAssigns);
-		}
+			}
+		return genOne;
 	}
 
 	protected void printResults() {

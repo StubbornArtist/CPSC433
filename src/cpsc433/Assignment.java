@@ -2,6 +2,7 @@ package cpsc433;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
 public class Assignment {
 	
@@ -49,6 +50,16 @@ public class Assignment {
 	
 	public boolean contains(Person p){
 		return people.contains(p);
+	}
+	@Override 
+	public String toString(){
+		String a = "[";
+		Iterator<Person> it = people.iterator();
+		while(it.hasNext()){
+			a+= it.next();
+			if(it.hasNext()) a+=",";
+		}
+		return "<" + this.room + "," + a + "] >";  
 	}
 	
 }

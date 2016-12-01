@@ -1,49 +1,17 @@
 package cpsc433;
-
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 public class Constraints {
-
-	public Node currentNode;
-	public Constraints(Node n, Environment e){
-		currentNode = n;
-		if (!hardConstraint1(currentNode.StringAssignments, e)){
-			currentNode.score = 0;
-			return;
+	private static Constraints instance = null;
+	private Constraints(){}
+	
+	public static Constraints getInstance(){
+		if(instance == null){
+			instance = new Constraints();
 		}
-		if (!hardConstraint2(currentNode.Assignments)){
-			currentNode.score = 0;
-			return;
-		}
-		if (!hardConstraint3(currentNode.Assignments)){
-			currentNode.score = 0;
-			return;
-		}
-		if (!hardConstraint4(currentNode.Assignments)){
-			currentNode.score = 0;
-			return;
-		}
-		currentNode.score += softConstraint1(currentNode.StringAssignments,e);
-		currentNode.score += softConstraint2(currentNode.StringAssignments,e);
-		currentNode.score += softConstraint3(currentNode.StringAssignments,e);
-		currentNode.score += softConstraint4(currentNode.StringAssignments,e);
-		currentNode.score += softConstraint5(currentNode.Assignments);
-		currentNode.score += softConstraint6(currentNode.Assignments);
-		currentNode.score += softConstraint7(currentNode.Assignments);
-		currentNode.score += softConstraint8(currentNode.Assignments);
-		currentNode.score += softConstraint9(currentNode.Assignments);
-		currentNode.score += softConstraint10(currentNode.Assignments);
-		currentNode.score += softConstraint11(currentNode.Assignments);
-		currentNode.score += softConstraint12(currentNode.Assignments);
-		currentNode.score += softConstraint13(currentNode.Assignments);
-		currentNode.score += softConstraint14(currentNode.Assignments);
-		currentNode.score += softConstraint15(currentNode.Assignments);
-		currentNode.score += softConstraint16(currentNode.Assignments);
+		return instance;
 	}
-
 	public boolean hardConstraint1(LinkedHashMap<String, String> a, Environment e) {
 		Iterator<String> people = e.getPeople().keySet().iterator();
 		
@@ -56,18 +24,18 @@ public class Constraints {
 		return true;
 	}
 
-	public boolean hardConstraint2(LinkedHashMap<String, Assignment> a) {
-		return false;
+	public static boolean hardConstraint2(LinkedHashMap<String, Assignment> a, Environment e) {
+		return true;
 
 	}
 
-	public boolean hardConstraint3(LinkedHashMap<String, Assignment> a) {
-		return false;
+	public boolean hardConstraint3(LinkedHashMap<String, Assignment> a, Environment e) {
+		return true;
 
 	}
 
-	public boolean hardConstraint4(LinkedHashMap<String, Assignment> a) {
-		return false;
+	public boolean hardConstraint4(LinkedHashMap<String, Assignment> a, Environment e) {
+		return true;
 
 	}
 
@@ -101,10 +69,11 @@ public class Constraints {
 		while(groupsIt.hasNext()){
 			Group g = groups.get(groupsIt.next());
 			heads = g.getHeadIterator();
-			members = g.membersIterator();
 			while(heads.hasNext()){
+				String head = heads.next();
+				members = g.membersIterator();
 				while(members.hasNext()){
-					if(!e.e_close(a.get(heads.next()), a.get(members.next()))){
+					if(!e.e_close(a.get(head), a.get(members.next()))){
 						allClose = false;
 						continue;
 					}
@@ -128,11 +97,12 @@ public class Constraints {
 		while(groupsIt.hasNext()){
 			Group g = groups.get(groupsIt.next());
 			heads = g.getHeadIterator();
-			members = g.membersIterator();
 			while(heads.hasNext()){
+				String head = heads.next();
+				members = g.membersIterator();
 				while(members.hasNext()){
 					String mem = members.next();
-					if(e.e_close(a.get(heads.next()), a.get(mem)) && e.e_secretary(mem)){
+					if(e.e_close(a.get(head), a.get(mem)) && e.e_secretary(mem)){
 						return 0;
 					}
 					
@@ -161,64 +131,98 @@ public class Constraints {
 		return 0;
 	}
 
-	public int softConstraint5(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint5(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
 	}
 
-	public int softConstraint6(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint6(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
 	}
 
-	public int softConstraint7(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint7(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
 	}
 
-	public int softConstraint8(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint8(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
 	}
 
-	public int softConstraint9(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint9(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
 	}
 
-	public int softConstraint10(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint10(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
 	}
 
-	public int softConstraint11(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint11(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
 	}
 
-	public int softConstraint12(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint12(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
 	}
 
-	public int softConstraint13(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint13(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
 	}
 
-	public int softConstraint14(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint14(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
 	}
 
-	public int softConstraint15(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint15(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
 	}
 
-	public int softConstraint16(LinkedHashMap<String, Assignment> a) {
+	public int softConstraint16(LinkedHashMap<String, Assignment> a, Environment e) {
 		return 0;
 
+	}
+	
+	public int eval(Node n, Environment e){
+		int score = 1000;
+		if (!hardConstraint1(n.StringAssignments, e)){
+			return 0;
+		}
+		if (!hardConstraint2(n.Assignments, e)){
+			return 0;
+		}
+		if (!hardConstraint3(n.Assignments, e)){
+			return 0;
+		}
+		if (!hardConstraint4(n.Assignments, e)){
+			return 0;
+		}
+		score += softConstraint1(n.StringAssignments,e);
+		score += softConstraint2(n.StringAssignments,e);
+		score += softConstraint3(n.StringAssignments,e);
+		score += softConstraint4(n.StringAssignments,e);
+		score += softConstraint5(n.Assignments,e);
+		score += softConstraint6(n.Assignments,e);
+		score += softConstraint7(n.Assignments,e);
+		score += softConstraint8(n.Assignments,e);
+		score += softConstraint9(n.Assignments,e);
+		score += softConstraint10(n.Assignments,e);
+		score += softConstraint11(n.Assignments,e);
+		score += softConstraint12(n.Assignments,e);
+		score += softConstraint13(n.Assignments,e);
+		score += softConstraint14(n.Assignments,e);
+		score += softConstraint15(n.Assignments,e);
+		score += softConstraint16(n.Assignments,e);
+		
+		return score;
 	}
 
 }
