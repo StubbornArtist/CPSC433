@@ -24,7 +24,7 @@ public class Constraints {
 		return true;
 	}
 
-	public static boolean hardConstraint2(LinkedHashMap<String, Assignment> a, Environment e) {
+	public boolean hardConstraint2(LinkedHashMap<String, Assignment> a, Environment e) {
 		return true;
 
 	}
@@ -41,7 +41,7 @@ public class Constraints {
 	//All heads of groups should have a large office
 	//penalty of -40
 	public int softConstraint1(LinkedHashMap<String, String> a, Environment e) {
-		boolean allLarge = true;
+		int score = 0;
 		Iterator<String> heads;
 		LinkedHashMap<String, Group> groups = e.getGroups();
 		Iterator<String> groupsIt = groups.keySet().iterator();
@@ -49,20 +49,16 @@ public class Constraints {
 				heads = groups.get(groupsIt.next()).getHeadIterator();
 				while(heads.hasNext()){
 					if(!e.e_large_room(a.get(heads.next()))){
-						allLarge = false;
-						break;
+						score +=-40;
 					}	
 				}
 			}	
-			if(allLarge){
-				return 0;
-			}
-		return -40;
+		return score;
 	}
 	//All heads of groups should be close to all members of their group
 	//penalty of -2
 	public int softConstraint2(LinkedHashMap<String, String> a, Environment e) {
-		boolean allClose = true;
+		int score = 0;
 		Iterator<String> heads;
 		Iterator<String> members;
 		LinkedHashMap<String, Group> groups = e.getGroups();
@@ -76,23 +72,20 @@ public class Constraints {
 				members = g.membersIterator();
 				while(members.hasNext()){
 					if(!e.e_close(a.get(head), a.get(members.next()))){
-						allClose = false;
-						break;
-					}
-					
+						score+= -2;
+					}	
 				}
 			}
 		}
-		if(allClose){
-			return 0;
-		}
-		return -2;
-
+		return score;
 	}
 
 	public int softConstraint3(LinkedHashMap<String, String> a, Environment e) {
 		Iterator<String> heads;
 		Iterator<String> members;
+		boolean closeToOne = false;
+		int numSec = 0;
+		int score = 0;
 		LinkedHashMap<String, Group> groups = e.getGroups();
 		Iterator<String> groupsIt = groups.keySet().iterator();
 		
@@ -104,19 +97,24 @@ public class Constraints {
 				members = g.membersIterator();
 				while(members.hasNext()){
 					String mem = members.next();
-					if(e.e_close(a.get(head), a.get(mem)) && e.e_secretary(mem)){
-						return 0;
+					if(e.e_secretary(mem)){
+						numSec++;
+						if(e.e_close(a.get(head), a.get(mem))) closeToOne = true;
 					}
-					
 				}
+				if(!closeToOne && numSec > 0) score += -30;
+				closeToOne = false;
+				numSec = 0;
 			}
 		}
-		return -30;
+		return score;
 	}
 
 	public int softConstraint4(LinkedHashMap<String, String> a, Environment e) {
 		Iterator<String> people = a.keySet().iterator();
 		Iterator<String> coworkers;
+		int score = 0;
+		
 		while(people.hasNext()){
 			String person = people.next();
 			if(e.e_secretary(person)){
@@ -124,12 +122,12 @@ public class Constraints {
 				while(coworkers.hasNext()){
 					String coworker = coworkers.next();
 					if(a.get(person).equals(a.get(coworker)) && !e.e_secretary(coworker)){
-						return -5;
+						score+=-5;
 					}
 				}
 			}
 		}
-		return 0;
+		return score;
 	}
 
 	public int softConstraint5(LinkedHashMap<String, Assignment> a, Environment e) {

@@ -20,6 +20,21 @@ public class Generation {
 		nodeN.putStrings(b);
 		this.facts.add(nodeN);
 	}
+	
+	public Node bestNode(){
+		Iterator<Node> nodes = facts.iterator();
+		Node maxNode = null;
+		int maxScore = 0;
+		
+		while(nodes.hasNext()){
+			Node n = nodes.next();
+			if(n.score > maxScore){
+				maxScore = n.score;
+				maxNode = n;
+			}	
+		}
+		return maxNode;
+	}
 	@Override
 	public String toString(){
 		Iterator<Node> nodes = facts.iterator();

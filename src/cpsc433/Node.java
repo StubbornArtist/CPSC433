@@ -20,6 +20,7 @@ public class Node {
 		this.StringAssignments = a;
 	}
 	
+	
 	@Override
 	public String toString(){
 		Iterator<Assignment> it = Assignments.values().iterator();

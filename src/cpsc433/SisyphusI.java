@@ -1,5 +1,6 @@
 package cpsc433;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -61,7 +62,6 @@ public class SisyphusI {
 		createShutdownHook();
 
 		if (args.length > 1) { // using command-line arguments
-			
 			if(args[1].equals("-1")){
 				System.out.println("Creating output file");
 				env.createOutputFile(fromFile + ".out");
@@ -98,6 +98,23 @@ public class SisyphusI {
 	 * hook is completely optional, but can be useful if you search doesn't exit
 	 * in a timely manner.
 	 */
+	
+	protected void createOutputFile(Generation g, String fileName){
+		try {
+			FileWriter writer = new FileWriter(fileName);
+			Node solution = g.bestNode();
+			Iterator<String> peopleIt = solution.StringAssignments.keySet().iterator();
+			while(peopleIt.hasNext()){
+				String person = peopleIt.next();
+				String room = solution.StringAssignments.get(person);
+				writer.write("assign-to(" + person + ", " + room + ")\n" );
+			}
+			writer.close();
+		} catch (Exception e) {
+			System.out.println("IO WRITER ERROR OCCURED");
+		}
+		
+	}
 	protected void createShutdownHook() {
 	}
 
@@ -134,14 +151,15 @@ public class SisyphusI {
 	 *            A time limit in milliseconds.
 	 */
 	protected void doSearch(Environment env, long timeLimit) {
-		Generation one = createFirstGen(env, 1000);
+		Generation one = createFirstGen(env, 10);
 		//System.out.println(one.toString());
 		Iterator<Node> nodes = one.facts.iterator();
 		while(nodes.hasNext()){
 			Node n = nodes.next();
-			System.out.println(n);
-			System.out.println(con.eval(nodes.next(), env));
+			n.score = con.eval(n, env);
+			System.out.println(n + "\n" + n.score);
 		}
+		createOutputFile(one, "solution.out");
 	}
 
 	private Generation createFirstGen(Environment env, int genSize) {
