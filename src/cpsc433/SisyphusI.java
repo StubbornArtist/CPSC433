@@ -99,6 +99,12 @@ public class SisyphusI {
 	 * in a timely manner.
 	 */
 	
+	protected void createShutdownHook() {
+	}
+
+	protected void killShutdownHook() {
+	}
+	
 	protected void createOutputFile(Generation g, String fileName){
 		try {
 			FileWriter writer = new FileWriter(fileName);
@@ -115,11 +121,6 @@ public class SisyphusI {
 		}
 		
 	}
-	protected void createShutdownHook() {
-	}
-
-	protected void killShutdownHook() {
-	}
 
 	/**
 	 * Run in "Command line mode", that is, batch mode.
@@ -127,7 +128,6 @@ public class SisyphusI {
 	protected void runCommandLineMode() {
 		try {
 			long timeLimit = new Long(args[1]).longValue();
-			// timeLimit -= (System.currentTimeMillis()-startTime);
 			System.out.println("Performing search for " + timeLimit + "ms");
 			try {
 				doSearch(env, timeLimit);
@@ -151,13 +151,12 @@ public class SisyphusI {
 	 *            A time limit in milliseconds.
 	 */
 	protected void doSearch(Environment env, long timeLimit) {
-		Generation one = createFirstGen(env, 10);
-		//System.out.println(one.toString());
+		Generation one = createFirstGen(env, 2);
 		Iterator<Node> nodes = one.facts.iterator();
 		while(nodes.hasNext()){
 			Node n = nodes.next();
 			n.score = con.eval(n, env);
-			System.out.println(n + "\n" + n.score);
+			n.mutate();
 		}
 		createOutputFile(one, "solution.out");
 	}

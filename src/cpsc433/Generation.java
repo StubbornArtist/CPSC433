@@ -35,6 +35,7 @@ public class Generation {
 		}
 		return maxNode;
 	}
+		
 	@Override
 	public String toString(){
 		Iterator<Node> nodes = facts.iterator();
