@@ -156,7 +156,11 @@ public class SisyphusI {
 		while(nodes.hasNext()){
 			Node n = nodes.next();
 			n.score = con.eval(n, env);
-			n.mutate();
+			System.out.println(n);
+			System.out.println(n.altToString());
+			n.mutate2();
+			System.out.println(n);
+			System.out.println(n.altToString());
 		}
 		createOutputFile(one, "solution.out");
 	}

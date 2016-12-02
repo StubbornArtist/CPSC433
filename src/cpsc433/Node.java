@@ -24,7 +24,7 @@ public class Node {
 		this.StringAssignments = a;
 	}
 	
-	public void mutate(){
+	public void mutate1(){
 		Random rand = new Random();
 		
 		String room = roomKeys.get(rand.nextInt(roomKeys.size()));
@@ -34,6 +34,21 @@ public class Node {
 		Assignments.get(room2).addPerson(person);
 		StringAssignments.put(person.name, room2);
 			
+	}
+	
+	public void mutate2(){
+		Random rand = new Random();
+		
+		String room1 = roomKeys.get(rand.nextInt(roomKeys.size()));
+		String room2 = roomKeys.get(rand.nextInt(roomKeys.size()));
+		Person person1 = Assignments.get(room1).randomPerson();
+		Person person2 = Assignments.get(room2).randomPerson();
+		
+		Assignments.get(room1).addPerson(person2);
+		Assignments.get(room2).addPerson(person1);
+		StringAssignments.put(person2.name, room1);
+		StringAssignments.put(person1.name, room2);
+		
 	}
 	
 	@Override
@@ -47,7 +62,7 @@ public class Node {
 		return node;
 	}
 	
-	public String AltToString(){
+	public String altToString(){
 		Iterator<String> it = StringAssignments.keySet().iterator();
 		String node = "";
 		while(it.hasNext()){
