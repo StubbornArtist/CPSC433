@@ -113,15 +113,15 @@ public class SisyphusI {
 	}
 	
 	///CAN WE CHANGE TO NODE INSTEAD OF GENERATION
-	protected void createOutputFile(Generation g, String fileName){
+	protected void createOutputFile(Node n, String fileName){
 		try {
 			FileWriter writer = new FileWriter(fileName);
-			Node solution = g.bestNode();
-			Iterator<String> peopleIt = solution.StringAssignments.keySet().iterator();
+			Iterator<String> peopleIt = n.StringAssignments.keySet().iterator();
 			while(peopleIt.hasNext()){
 				String person = peopleIt.next();
-				String room = solution.StringAssignments.get(person);
+				String room = n.StringAssignments.get(person);
 				writer.write("assign-to(" + person + ", " + room + ")\n" );
+				writer.write("SCORE: " + n.score);
 			}
 			writer.close();
 		} catch (Exception e) {
@@ -160,12 +160,14 @@ public class SisyphusI {
 	 */
 	protected void doSearch(Environment env, long timeLimit) {
 
-		Timer timeout = new Timer();
+		Timer timeout = new Timer(false);
 		TimerTask killSearch = new TimerTask(){
 			@Override
 			public void run() {
 				search = false;
 				createOutputFile(bestNode, "solution.out");
+				this.cancel();
+				timeout.cancel();
 			}
 			
 		};
@@ -178,10 +180,9 @@ public class SisyphusI {
 			//mutate generations with currentGen as input
 			
 			//cull generations of outputted mutated gens
-			
+			currentGen = cullGeneration(one, 1000, (float) 0.8, (float) 0.2);
 			//currentGen = current generated generation
-			
-			//bestNode = best node in curr Generation
+			bestNode = currentGen.bestNode();
 		}	
 	}
 
@@ -224,6 +225,27 @@ public class SisyphusI {
 		return genOne;
 	}
 
+	public Generation cullGeneration(Generation gen, int desiredSize, float bestPercentage, float worstPercentage){
+		Generation newGen = new Generation(gen.genNumber + 1);
+		
+		// The porportion of nodes to grab from both the best nodes and
+		// the worst nodes
+		float desirePercentage = (float) desiredSize / gen.facts.size();
+		
+		Node[] bestNodes = gen.getBestOfGen(bestPercentage);
+		Node[] worstNodes = gen.getWorstOfGen(worstPercentage);
+		
+		for(int i = 0; i < Math.round(desirePercentage * bestNodes.length); i++){
+			newGen.addFact(bestNodes[i]);
+		}
+		
+		for(int i = 0; i < Math.round(desirePercentage * worstNodes.length); i++){
+			newGen.addFact(worstNodes[i]);
+		}
+		
+		return newGen;
+	}
+	
 	protected void printResults() {
 		System.out.println("Would print results here, but the search isn't implemented yet.");
 	}
