@@ -41,5 +41,9 @@ public class Group{
 		java.util.Iterator<String> it = members.iterator();
 		return it;
 	}
+	
+	public HashSet<String> getHeads(){
+		return heads;
+	}
 }
 

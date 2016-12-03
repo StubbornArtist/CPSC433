@@ -7,7 +7,7 @@ public class Room {
 	
 	private String number;
 	private char size;
-	private HashSet<String> close_to;
+	public HashSet<String> close_to;
 	
 	public Room(String num){
 		number = num;

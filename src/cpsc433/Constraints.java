@@ -52,7 +52,13 @@ public class Constraints {
 	}
 
 	public boolean hardConstraint3(LinkedHashMap<String, Assignment> a, Environment e) {
+		for(Assignment assn : a.values()){
+			if(assn.getPeople().size() > 2){
+				return false;
+			}
+		}
 		return true;
+
 
 	}
 
@@ -382,23 +388,152 @@ public class Constraints {
 		} return pen;
 	}
 
-	public int softConstraint9(LinkedHashMap<String, Assignment> a, Environment e) {
-		return 0;
+	public int softConstraint9(LinkedHashMap<String, String> a, Environment e) {
+		int score = 0;
+		//grabbing the projects 
+		LinkedHashMap<String, Project> projects = e.projects;
+		
+		//grab the project Heads
+		for(Project proj : projects.values()){
+			if(!proj.isLarge())
+				continue;
+			Room headRoom = null;
+			String secretaryRoom = null; 
+			boolean oneSecr = false;
+			for(String head : proj.getHeads()){
+				headRoom = e.getRooms().get(a.get(head));
+				for(String member : proj.getMembers()){
+					if(e.getPeople().get(member).hasRole("secretary")){
+						secretaryRoom = a.get(member);
+						if(headRoom.close_to.contains(secretaryRoom)){
+							oneSecr = true;
+						}
+					}
+				}
+				if(oneSecr = false){
+					score -= 10;
+				}
+				//resetting for next head
+				oneSecr = false;
+			}
+			
+			
+		}
+		return score;
 
 	}
 
-	public int softConstraint10(LinkedHashMap<String, Assignment> a, Environment e) {
-		return 0;
+	public int softConstraint10(LinkedHashMap<String, String> a, Environment e) {
+		boolean allLarge = true;
+		int score = 0;
+		//grabbing the projects 
+		LinkedHashMap<String, Project> projects = e.projects;
+		LinkedHashMap<String, Group> groups = e.getGroups();
+		
+		HashSet<String> groupHeads = null;
+		for(Group gr : groups.values()){
+			for(String head : gr.getHeads()){
+				groupHeads.add(head);
+			}
+		}
+		
+		//grab the project Heads
+		for(Project proj : projects.values()){
+			if(!proj.isLarge())
+				continue;
+			Room headRoom = null;
+			for(String head : proj.getHeads()){
+				headRoom = e.getRooms().get(a.get(head));
+				for(String member : proj.getMembers()){
+					if(groupHeads.contains(member)){
+						String groupHeadRoom = a.get(member);
+						if(!headRoom.close_to.contains(groupHeadRoom)){
+							score -= 10;
+						}
+					}
+				}
+			}
+			
+			
+		}
+		return score;
 
 	}
 
 	public int softConstraint11(LinkedHashMap<String, Assignment> a, Environment e) {
-		return 0;
+		//The people we have already looked at, so we dont count them twice.
+		HashSet<Person> checked = new HashSet<Person>();
+		int score = 0;
+		
+		//Iterate through each assignment
+		for (Assignment assn: a.values()){
+			//now we need to iterate through the people
+			for(Person per: assn.getPeople()){
+				//we only really care if there is a smoker
+				if(per.smokes){
+					//we need to check against other people in this assignment (notice we can check against ourselves because this will never cause a conflict
+					for(Person per2: assn.getPeople()){
+						//but make sure we havent checked this person already
+						if(checked.contains(per2)){
+							continue;
+						}
+						//There is a non-smoker + a smoker so we decrement score
+						if(!per2.smokes){
+							score -= 50;
+						}
+					}
+				}
+				//add this person so we know that we checked them
+				checked.add(per);
+			}
+		}
+		return score;
+		
 
 	}
 
 	public int softConstraint12(LinkedHashMap<String, Assignment> a, Environment e) {
-		return 0;
+		//The people we have already looked at, so we dont count them twice.
+				HashSet<Person> checked = new HashSet<Person>();
+				int score = 0;
+				Project per1 = null;
+				Project per2 = null;
+				
+				//Iterate through each assignment
+				for (Assignment assn: a.values()){
+					//now we need to iterate through the people
+					for(Person per: assn.getPeople()){
+						//we need to grab this person project.
+						for(Project proj: e.projects.values()){
+							if(proj.hasMember(per.name)){
+								per1 = proj;
+								break;
+							}
+						}
+						//now we look at the other people
+						for(Person pers2: assn.getPeople()){
+							//are we looking at ourself or someone already checked?
+							if(pers2 == per || checked.contains(pers2)){
+								continue;
+							}
+							//here we grab the second persons project
+							for(Project proj: e.projects.values()){
+								if(proj.hasMember(pers2.name)){
+									per2 = proj;
+									break;
+								}
+							}
+							//if they share the same project, decrement the score
+							if(per1 == per2){
+								score -= 7;
+							}
+							
+						}
+						//add this person so we know that we checked them
+						checked.add(per);
+					}
+				}
+				return score;
 
 	}
 
@@ -562,9 +697,9 @@ public class Constraints {
 		System.out.println("Soft Constraint 7 penalty: " + score);
 		score += softConstraint8(n.StringAssignments,e);
 		System.out.println("Soft Constraint 8 penalty: " + score);
-		score += softConstraint9(n.Assignments,e);
+		score += softConstraint9(n.StringAssignments,e);
 		System.out.println("Soft Constraint 9 penalty: " + score);
-		score += softConstraint10(n.Assignments,e);
+		score += softConstraint10(n.StringAssignments,e);
 		System.out.println("Soft Constraint 10 penalty: " + score);
 		score += softConstraint11(n.Assignments,e);
 		System.out.println("Soft Constraint 11 penalty: " + score);

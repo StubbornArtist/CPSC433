@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * This is the main class for the SysiphusI assignment. It's main function is to
@@ -26,6 +28,9 @@ import java.util.Random;
  */
 public class SisyphusI {
 
+	
+	
+	
 	/**
 	 * Merely create a new SisypyusI object, and let the constructor run the
 	 * program.
@@ -40,6 +45,8 @@ public class SisyphusI {
 	protected final String[] args;
 	protected Environment env;
 	protected Constraints con;
+	public boolean search = true;
+	private Node bestNode = null;
 
 	public SisyphusI(String[] args) {
 		this.args = args;
@@ -105,6 +112,7 @@ public class SisyphusI {
 	protected void killShutdownHook() {
 	}
 	
+	///CAN WE CHANGE TO NODE INSTEAD OF GENERATION
 	protected void createOutputFile(Generation g, String fileName){
 		try {
 			FileWriter writer = new FileWriter(fileName);
@@ -151,19 +159,32 @@ public class SisyphusI {
 	 *            A time limit in milliseconds.
 	 */
 	protected void doSearch(Environment env, long timeLimit) {
-		Generation one = createFirstGen(env, 2);
-		Iterator<Node> nodes = one.facts.iterator();
-		while(nodes.hasNext()){
-			Node n = nodes.next();
-			n.score = con.eval(n, env);
-			System.out.println(n);
-			System.out.println(n.altToString());
-			n.mutate2();
-			System.out.println(n);
-			System.out.println(n.altToString());
-		}
-		createOutputFile(one, "solution.out");
+
+		Timer timeout = new Timer();
+		TimerTask killSearch = new TimerTask(){
+			@Override
+			public void run() {
+				search = false;
+				createOutputFile(bestNode, "solution.out");
+			}
+			
+		};
+		timeout.schedule(killSearch, (long) (timeLimit*0.9));
+		int GenSize = 1000;
+		
+		Generation one = createFirstGen(env, GenSize);
+		while(search){
+			Generation currentGen = one;
+			//mutate generations with currentGen as input
+			
+			//cull generations of outputted mutated gens
+			
+			//currentGen = current generated generation
+			
+			//bestNode = best node in curr Generation
+		}	
 	}
+
 
 	private Generation createFirstGen(Environment env, int genSize) {
 		Random rand = new Random();
