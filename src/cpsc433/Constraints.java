@@ -509,7 +509,6 @@ public class Constraints {
 		int penalty = 0;
 		Assignment assign;
 		HashSet people;
-		Iterator<Person> it;
 		Room room;
 		
 		// Iterate through the Linked Hash Map to examine each assignment
@@ -533,51 +532,35 @@ public class Constraints {
 	}
 	
 	public int eval(Node n, Environment e){
-		int score = 1000;
+		int score = Integer.MAX_VALUE;
 		if (!hardConstraint1(n.StringAssignments, e)){
-			return 0;
+			return -1;
 		}
 		if (!hardConstraint2(n.Assignments, e)){
-			return 0;
+			return -1;
 		}
 		if (!hardConstraint3(n.Assignments, e)){
-			return 0;
+			return -1;
 		}
 		if (!hardConstraint4(n.Assignments, e)){
-			return 0;
+			return -1;
 		}
 		score += softConstraint1(n.StringAssignments,e);
-		System.out.println("Soft Constraint 1 penalty: " + score);
 		score += softConstraint2(n.StringAssignments,e);
-		System.out.println("Soft Constraint 2 penalty: " + score);
 		score += softConstraint3(n.StringAssignments,e);
-		System.out.println("Soft Constraint 3 penalty: " + score);
 		score += softConstraint4(n.StringAssignments,e);
-		System.out.println("Soft Constraint 4 penalty: " + score);
 		score += softConstraint5(n.StringAssignments,e);
-		System.out.println("Soft Constraint 5 penalty: " + score);
 		score += softConstraint6(n.StringAssignments,e);
-		System.out.println("Soft Constraint 6 penalty: " + score);
 		score += softConstraint7(n.StringAssignments,e);
-		System.out.println("Soft Constraint 7 penalty: " + score);
 		score += softConstraint8(n.StringAssignments,e);
-		System.out.println("Soft Constraint 8 penalty: " + score);
 		score += softConstraint9(n.Assignments,e);
-		System.out.println("Soft Constraint 9 penalty: " + score);
 		score += softConstraint10(n.Assignments,e);
-		System.out.println("Soft Constraint 10 penalty: " + score);
 		score += softConstraint11(n.Assignments,e);
-		System.out.println("Soft Constraint 11 penalty: " + score);
 		score += softConstraint12(n.Assignments,e);
-		System.out.println("Soft Constraint 12 penalty: " + score);
 		score += softConstraint13(n.Assignments,e);
-		System.out.println("Soft Constraint 13 penalty: " + score);
 		score += softConstraint14(n.Assignments,e);
-		System.out.println("Soft Constraint 14 penalty: " + score);
 		score += softConstraint15(n.Assignments,e);
-		System.out.println("Soft Constraint 15 penalty: " + score);
 		score += softConstraint16(n.Assignments,e);
-		System.out.println("Soft Constraint 16 penalty: " + score);
 		
 		return score;
 	}

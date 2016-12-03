@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * This is the main class for the SysiphusI assignment. It's main function is to
@@ -62,10 +64,6 @@ public class SisyphusI {
 		createShutdownHook();
 
 		if (args.length > 1) { // using command-line arguments
-			if(args[1].equals("-1")){
-				System.out.println("Creating output file");
-				env.createOutputFile(fromFile + ".out");
-			}
 			runCommandLineMode();
 			killShutdownHook();
 		} else { // using interactive mode
@@ -108,7 +106,7 @@ public class SisyphusI {
 	protected void createOutputFile(Generation g, String fileName){
 		try {
 			FileWriter writer = new FileWriter(fileName);
-			Node solution = g.bestNode();
+			Node solution = g.bestFact();
 			Iterator<String> peopleIt = solution.StringAssignments.keySet().iterator();
 			while(peopleIt.hasNext()){
 				String person = peopleIt.next();
@@ -151,18 +149,17 @@ public class SisyphusI {
 	 *            A time limit in milliseconds.
 	 */
 	protected void doSearch(Environment env, long timeLimit) {
-		Generation one = createFirstGen(env, 2);
-		Iterator<Node> nodes = one.facts.iterator();
-		while(nodes.hasNext()){
-			Node n = nodes.next();
-			n.score = con.eval(n, env);
-			System.out.println(n);
-			System.out.println(n.altToString());
-			n.mutate2();
-			System.out.println(n);
-			System.out.println(n.altToString());
-		}
-		createOutputFile(one, "solution.out");
+		Generation one = createFirstGen(env, 100);
+		
+			Iterator<Node> nodes = one.facts.iterator();
+			while(nodes.hasNext()){
+				Node node = nodes.next();
+				node.score = con.eval(node, env);
+				System.out.println(node);
+				System.out.println(node.score);
+			}
+			one.mutate(2,1,0,env);
+	
 	}
 
 	private Generation createFirstGen(Environment env, int genSize) {
@@ -184,8 +181,8 @@ public class SisyphusI {
 				//Is this person hard-assigned a room?
 				//If they are, the roomVal becomes the room that they are assigned to
 				//no means we assign them the random room	
-				if (env.assignments.containsKey(personVal)){
-					roomVal = rooms.get(env.assignments.get(personVal));
+				if (env.assignments.containsKey(personVal.name)){
+					roomVal = rooms.get(env.assignments.get(personVal.name));
 				}else{
 					 roomVal = roomList.get(rand.nextInt(roomList.size()));
 				}	
@@ -201,6 +198,8 @@ public class SisyphusI {
 			genOne.addFact(assignment,StringAssigns);
 		}
 		return genOne;
+		
+		
 	}
 
 	protected void printResults() {
@@ -235,4 +234,5 @@ public class SisyphusI {
 			System.err.println("exiting: " + e.toString());
 		}
 	}
+	
 }

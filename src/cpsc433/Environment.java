@@ -52,6 +52,9 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	public LinkedHashMap<String, Project> getProjects(){
 		return this.projects;
 	}
+	public LinkedHashMap<String, String> getAssignments(){
+		return this.assignments;
+	}
 	
 	protected Environment(String name) {
 		super(name == null ? "theEnvironment" : name);
