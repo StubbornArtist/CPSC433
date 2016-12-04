@@ -176,7 +176,7 @@ public class SisyphusI {
 		Generation currentGen = createFirstGen(env, GenSize);
 		while(search){
 			//mutate generations with currentGen as input
-			currentGen.mutate(1,1,1, env, con);
+			currentGen.mutate(1,1,1, env);
 			//evaluate each of the nodes in the generation
 			currentGen.evaluate(env, con);
 			//cull generations of mutated nodes

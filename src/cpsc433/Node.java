@@ -101,7 +101,7 @@ public class Node {
 			Assignments.remove(r.getRoomNumber());
 		}
 	}
-	public Node changeRooms(Environment e, Constraints c){
+	public Node changeRooms(Environment e){
 		Node newNode = new Node(this);
 		
 		Random rand = new Random();
@@ -113,7 +113,7 @@ public class Node {
 		do{
 			room = roomAt(rand.nextInt(numRooms()));
 			a = Assignments.get(room.getRoomNumber());
-		}while(!c.lessThanTwoARoom(a));
+		}while(a.size() > 1);
 		
 		room2 = roomAt(rand.nextInt(numRooms()));
 		person = Assignments.get(room.getRoomNumber()).randomPerson();

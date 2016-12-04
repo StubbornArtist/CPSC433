@@ -41,13 +41,13 @@ public class Generation {
 		return facts.size();
 	}
 	
-	public void mutate(int numGenSwap, int numFactSwap, int numChange, Environment e, Constraints c){
+	public void mutate(int numGenSwap, int numFactSwap, int numChange, Environment e){
 		Random rand = new Random();
 		for(int i = 0; i < numGenSwap; i++){
-			this.swap(e,c);
+			this.swap(e);
 		}
 		for(int i = 0; i < numFactSwap; i++){
-			addFact(factAt(rand.nextInt(size())).changeRooms(e,c));
+			addFact(factAt(rand.nextInt(size())).changeRooms(e));
 		}
 		for(int i = 0; i < numChange; i++){
 			addFact(factAt(rand.nextInt(size())).swapRooms(e));
@@ -55,7 +55,7 @@ public class Generation {
 		genNumber++;
 	}
 	
-	public void swap(Environment e, Constraints c){
+	public void swap(Environment e){
 		Random rand = new Random();
 		int num1 = rand.nextInt(size());
 		int num2;
@@ -74,7 +74,7 @@ public class Generation {
 			p = a1.randomPerson();
 			room = n2.getRoom(p);	
 			a2 = n2.getAssignment(room.getRoomNumber());
-		}while(!c.lessThanTwoARoom(a1) || !c.lessThanTwoARoom(a2));
+		}while(a1.size() > 1 || a2.size() > 1);
 	
 		n1.remove(p, a1.getRoom());
 		n1.put(p, room);
