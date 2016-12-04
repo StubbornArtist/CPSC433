@@ -76,7 +76,7 @@ public class Constraints {
 	public boolean hardConstraint4(LinkedHashMap<String, Assignment> a, Environment e) {
 
 		Assignment assign;
-		HashSet people;
+		HashSet<Person> people = null;
 		Iterator<Person> it;
 		Person person;
 		Group g;
@@ -240,10 +240,6 @@ public class Constraints {
 		int score = 0;
 
 		for (String p : a.keySet()) {
-			// get room associated with person p
-			String rName = a.get(p);
-			Room r = e.getRooms().get(rName);
-
 			if (e.e_manager(p)) {
 				for (String gs : e.getGroups().keySet()) {
 					if (e.e_group(p, gs)) {
@@ -256,7 +252,6 @@ public class Constraints {
 							String m2 = m.next();
 							// if we encounter a secretary
 							if (e.e_secretary(m2)) {
-								Iterator<String> s = r.closeToIterator();
 								if (e.e_close(a.get(p), a.get(m2))) {
 									isClose = true;
 								}
@@ -292,10 +287,6 @@ public class Constraints {
 		int pen = 0;
 
 		for (String p : a.keySet()) {
-			// get room associated with person p
-			String rName = a.get(p);
-			Room r = e.getRooms().get(rName);
-
 			if (e.e_manager(p)) {
 				for (String gs : e.getGroups().keySet()) {
 					if (e.e_group(p, gs)) {
@@ -308,8 +299,6 @@ public class Constraints {
 							String m2 = m.next();
 							// if we encounter a group head in group gs
 							if (e.e_heads_group(m2, gs)) {
-								Iterator<String> s = r.closeToIterator();
-
 								// iterate through rooms ss close to room r
 								if (e.e_close(a.get(p), a.get(m2))) {
 									isClose = true;
@@ -346,9 +335,6 @@ public class Constraints {
 		int pen = 0;
 
 		for (String p : a.keySet()) {
-			// get room associated with person p
-			String rName = a.get(p);
-			Room r = e.getRooms().get(rName);
 
 			if (e.e_manager(p)) {
 				for (String gs : e.getGroups().keySet()) {
@@ -360,7 +346,6 @@ public class Constraints {
 						// iterate through group members
 						while (m.hasNext()) {
 							String m2 = m.next();
-							Iterator<String> s = r.closeToIterator();
 
 							// iterate through rooms ss close to room r
 							if (e.e_close(a.get(p), a.get(m2))) {
@@ -397,9 +382,6 @@ public class Constraints {
 		int pen = 0;
 
 		for (String p : a.keySet()) {
-			// get room associated with person p
-			String rName = a.get(p);
-			Room r = e.getRooms().get(rName);
 
 			for (String js : e.getProjects().keySet()) {
 				if (e.e_heads_project(p, js)) {
@@ -410,7 +392,6 @@ public class Constraints {
 					// iterate through group members
 					while (m.hasNext()) {
 						String m2 = m.next();
-						Iterator<String> s = r.closeToIterator();
 
 						// iterate through rooms ss close to room r
 						if (e.e_close(a.get(p), a.get(m2))) {
@@ -450,7 +431,7 @@ public class Constraints {
 						}
 					}
 				}
-				if (oneSecr = false) {
+				if (oneSecr == false) {
 					score -= 10;
 				}
 				// resetting for next head
@@ -463,13 +444,12 @@ public class Constraints {
 	}
 
 	public int softConstraint10(LinkedHashMap<String, String> a, Environment e) {
-		boolean allLarge = true;
 		int score = 0;
 		// grabbing the projects
 		LinkedHashMap<String, Project> projects = e.projects;
 		LinkedHashMap<String, Group> groups = e.getGroups();
 
-		HashSet<String> groupHeads = null;
+		HashSet<String> groupHeads = new HashSet<String>();
 		for (Group gr : groups.values()) {
 			for (String head : gr.getHeads()) {
 				groupHeads.add(head);
@@ -495,7 +475,6 @@ public class Constraints {
 
 		}
 		return score;
-
 	}
 
 	public int softConstraint11(LinkedHashMap<String, Assignment> a, Environment e) {
@@ -583,7 +562,7 @@ public class Constraints {
 
 		int penalty = 0;
 		Assignment assign;
-		HashSet people;
+		HashSet<Person> people = null;
 		Iterator<Person> it;
 		Person person1, person2;
 
@@ -626,7 +605,7 @@ public class Constraints {
 	public int softConstraint14(LinkedHashMap<String, Assignment> a, Environment e) {
 		int penalty = 0;
 		Assignment assign;
-		HashSet people;
+		HashSet<Person> people = null;
 
 		// Iterate through the Linked Hash Map to examine each assignment
 		for (Map.Entry<String, Assignment> assignment : a.entrySet()) {
@@ -646,7 +625,7 @@ public class Constraints {
 	public int softConstraint15(LinkedHashMap<String, Assignment> a, Environment e) {
 		int penalty = 0;
 		Assignment assign;
-		HashSet people;
+		HashSet<Person> people = null;
 		Iterator<Person> it;
 		Person person1, person2;
 
@@ -672,15 +651,12 @@ public class Constraints {
 		return penalty;
 	}
 
-	
-
 	// Two people shouldn't share a small room
 	public int softConstraint16(LinkedHashMap<String, Assignment> a, Environment e) {
 
 		int penalty = 0;
 		Assignment assign;
-		HashSet people;
-		Iterator<Person> it;
+		HashSet<Person> people = null;
 		Room room;
 
 		// Iterate through the Linked Hash Map to examine each assignment
@@ -700,7 +676,7 @@ public class Constraints {
 		}
 		return penalty;
 	}
-	
+
 	/**
 	 * Handles soft constraints 1,4,11,13,16 because all of these can be handled
 	 * within an individual room. Rather than looping through each node every
@@ -708,13 +684,13 @@ public class Constraints {
 	 * performing the individual checks every room
 	 * 
 	 * @param a
-	 * 			The list of assignment held within a node
+	 *            The list of assignment held within a node
 	 * @param e
-	 * 			The outside environment containing the fact set
-	 * @return
-	 * 			The overall score the node achieved based on the soft constraints above
+	 *            The outside environment containing the fact set
+	 * @return The overall score the node achieved based on the soft constraints
+	 *         above
 	 */
-	public int softConstraintConglomerate(LinkedHashMap<String, Assignment> a, Environment e) {
+	public int softConstraintConglomerate14111316(LinkedHashMap<String, Assignment> a, Environment e) {
 		int score = 0;
 		HashSet<Person> people = null;
 		Room assigned = null;
@@ -770,10 +746,212 @@ public class Constraints {
 					}
 				}
 			}
+			//resetting
+			secretary = false;
+			smoker = false;
+			hacker = false;
 		}
 		return score;
 	}
 
+	/**
+	 * Handles soft constraints 2,3 because all of these can be handled
+	 * within an individual room. Rather than looping through each node every
+	 * single constraint, we can check them all as a conglomerate by simply
+	 * performing the individual checks every room
+	 * 
+	 * @param a
+	 *            The list of assignment held within a node
+	 * @param e
+	 *            The outside environment containing the fact set
+	 * @return The overall score the node achieved based on the soft constraints
+	 *         above
+	 */
+	public int softConstraintConglomerate23(LinkedHashMap<String, String> a, Environment e) {
+		int score = 0;
+		boolean isClose = false;
+		Iterator<String> heads;
+		Iterator<String> members;
+		int numSec = 0;
+		boolean closeToOne = false;
+		LinkedHashMap<String, Group> groups = e.getGroups();
+		Iterator<String> groupsIt = groups.keySet().iterator();
+
+		while (groupsIt.hasNext()) {
+			Group g = groups.get(groupsIt.next());
+			heads = g.getHeadIterator();
+			while (heads.hasNext()) {
+				String head = heads.next();
+				members = g.membersIterator();
+				while (members.hasNext()) {
+					String mem = members.next();
+					if (e.e_close(a.get(head), a.get(mem))) {
+						isClose = true;
+					}
+					if (e.e_secretary(mem)) {
+						numSec++;
+						if (e.e_close(a.get(head), a.get(mem)))
+							closeToOne = true;
+					} else
+						isClose = false;
+					if (!closeToOne && numSec > 0)
+						score += -30;
+					if (!isClose && !mem.equals(head))
+						score -= 2;
+				}
+			}
+			//resetting for next group
+			isClose = false;
+			closeToOne = false;
+		}
+		return score;
+	}
+
+	/**
+	 * Handles soft constraints 5,6,7 because all of these can be handled
+	 * within an individual room. Rather than looping through each node every
+	 * single constraint, we can check them all as a conglomerate by simply
+	 * performing the individual checks every room
+	 * 
+	 * @param a
+	 *            The list of assignment held within a node
+	 * @param e
+	 *            The outside environment containing the fact set
+	 * @return The overall score the node achieved based on the soft constraints
+	 *         above
+	 */
+	public int softConstraintConglomerate567(LinkedHashMap<String, String> a, Environment e) {
+		boolean isCloseSecretary = false;
+		boolean isCloseGroupHead = false;
+		boolean isCloseMembers = false;
+		int score = 0;
+
+		for (String p : a.keySet()) {
+			if (e.e_manager(p)) {
+				for (String gs : e.getGroups().keySet()) {
+					if (e.e_group(p, gs)) {
+						// get group p is in
+						Group g = e.getGroups().get(gs);
+						Iterator<String> m = g.membersIterator();
+
+						// iterate through group members
+						while (m.hasNext()) {
+							String m2 = m.next();
+							// if we encounter a secretary
+							if (e.e_secretary(m2)) {
+								if (e.e_close(a.get(p), a.get(m2))) {
+									isCloseSecretary = true;
+								}
+								// if no secretaries are close, penalize
+								if (!isCloseSecretary)
+									score -= 20;
+							}
+							if (e.e_heads_group(m2, gs)) {
+
+								// iterate through rooms ss close to room r
+								if (e.e_close(a.get(p), a.get(m2))) {
+									isCloseGroupHead = true;
+								}
+								// if no group heads are close, penalize
+								if (!isCloseGroupHead)
+									score -= 20;
+							}
+							// iterate through rooms ss close to room r
+							if (e.e_close(a.get(p), a.get(m2))) {
+								isCloseMembers = true;
+							}
+							// if m not in any of the rooms close to r, penalize
+							if (!isCloseMembers && !m2.equals(p))
+								score -= 2;
+							// reset boolean
+							isCloseMembers = false;
+							isCloseGroupHead = false;
+							isCloseSecretary = false;
+
+						}
+					}
+				}
+			}
+		}
+		return score;
+	}
+
+	/**
+	 * Handles soft constraints 5,6,7 because all of these can be handled
+	 * within an individual room. Rather than looping through each node every
+	 * single constraint, we can check them all as a conglomerate by simply
+	 * performing the individual checks every room
+	 * 
+	 * @param a
+	 *            The list of assignment held within a node
+	 * @param e
+	 *            The outside environment containing the fact set
+	 * @return The overall score the node achieved based on the soft constraints
+	 *         above
+	 */
+	public int softConstraintConglomerate8910(LinkedHashMap<String, String> a, Environment e) {
+		int score = 0;
+		// grabbing the projects
+		LinkedHashMap<String, Project> projects = e.projects;
+		LinkedHashMap<String, Group> groups = e.getGroups();
+		HashSet<String> groupHeads = new HashSet<String>();
+		
+		
+		for (Group gr : groups.values()) {
+			for (String head : gr.getHeads()) {
+				groupHeads.add(head);
+			}
+		}
+		// grab the project Heads
+		for (Project proj : projects.values()) {
+			if (!proj.isLarge())
+				continue;
+			Room headRoom = null;
+			String secretaryRoom = null;
+			boolean oneSecr = false;
+			boolean allClose = true;
+			for (String head : proj.getHeads()) {
+				headRoom = e.getRooms().get(a.get(head));
+				for (String member : proj.getMembers()) {
+					
+					//checking for group heads being close
+					if (groupHeads.contains(member)) {
+						String groupHeadRoom = a.get(member);
+						if (!headRoom.close_to.contains(groupHeadRoom)) {
+							score -= 10;
+						}
+					}
+					//checking for a secretary being close
+					if (e.getPeople().get(member).hasRole("secretary")) {
+						secretaryRoom = a.get(member);
+						if (headRoom.close_to.contains(secretaryRoom)) {
+							oneSecr = true;
+						}
+					}
+					//checking for all members being close
+					if (allClose == true) {
+						String memberRoom = a.get(member);
+						if (!headRoom.close_to.contains(memberRoom)) {
+							allClose = false;
+						}
+					}
+				}
+				if (oneSecr == false) {
+					score -= 10;
+				}
+				if(allClose == false){
+					score -= 5;
+				}
+				// resetting for next head
+				oneSecr = false;
+				allClose = true;
+			}
+
+		}
+		return score;
+
+	}
+	
 	public int eval(Node n, Environment e) {
 		int score = 1000;
 		if (!hardConstraint1(n.StringAssignments, e)) {
@@ -788,30 +966,20 @@ public class Constraints {
 		if (!hardConstraint4(n.Assignments, e)) {
 			return 0;
 		}
-		score += softConstraint2(n.StringAssignments, e);
-		System.out.println("Soft Constraint 2 penalty: " + score);
-		score += softConstraint3(n.StringAssignments, e);
-		System.out.println("Soft Constraint 3 penalty: " + score);
-		score += softConstraint5(n.StringAssignments, e);
-		System.out.println("Soft Constraint 5 penalty: " + score);
-		score += softConstraint6(n.StringAssignments, e);
-		System.out.println("Soft Constraint 6 penalty: " + score);
-		score += softConstraint7(n.StringAssignments, e);
-		System.out.println("Soft Constraint 7 penalty: " + score);
-		score += softConstraint8(n.StringAssignments, e);
-		System.out.println("Soft Constraint 8 penalty: " + score);
-		score += softConstraint9(n.StringAssignments, e);
-		System.out.println("Soft Constraint 9 penalty: " + score);
-		score += softConstraint10(n.StringAssignments, e);
-		System.out.println("Soft Constraint 10 penalty: " + score);
-		score += softConstraint11(n.Assignments, e);
+		score += softConstraintConglomerate23(n.StringAssignments, e);
+		System.out.println("Soft Constraint 2, 3 penalty: " + score);
+		score += softConstraintConglomerate567(n.StringAssignments, e);
+		System.out.println("Soft Constraint 5, 6, 7 penalty: " + score);
+		score += softConstraintConglomerate8910(n.StringAssignments, e);
+		System.out.println("Soft Constraint 8, 9, 10 penalty: " + score);
+		score += softConstraint12(n.Assignments, e);
 		System.out.println("Soft Constraint 12 penalty: " + score);
-		score += softConstraint13(n.Assignments, e);
+		score += softConstraint14(n.Assignments, e);
 		System.out.println("Soft Constraint 14 penalty: " + score);
 		score += softConstraint15(n.Assignments, e);
 		System.out.println("Soft Constraint 15 penalty: " + score);
-		score += softConstraintConglomerate(n.Assignments, e);
-		System.out.println("Soft Constraints 1,4,11,13,16 penalty: "+score);
+		score += softConstraintConglomerate14111316(n.Assignments, e);
+		System.out.println("Soft Constraints 1, 4, 11, 13, 16 penalty: " + score);
 
 		return score;
 	}
