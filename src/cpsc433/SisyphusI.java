@@ -1,6 +1,7 @@
 package cpsc433;
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -27,10 +28,6 @@ import java.util.TimerTask;
  *
  */
 public class SisyphusI {
-
-	
-	
-	
 	/**
 	 * Merely create a new SisypyusI object, and let the constructor run the
 	 * program.
@@ -46,7 +43,7 @@ public class SisyphusI {
 	protected Environment env;
 	protected Constraints con;
 	public boolean search = true;
-	private Node bestNode = null;
+	//private Node bestNode = null;
 
 	public SisyphusI(String[] args) {
 		this.args = args;
@@ -115,10 +112,9 @@ public class SisyphusI {
 				String person = peopleIt.next();
 				String room = n.StringAssignments.get(person);
 				writer.write("assign-to(" + person + ", " + room + ")\n" );
-				writer.write("SCORE: " + n.score);
 			}
 			writer.close();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			System.out.println("IO WRITER ERROR OCCURED" + e.getMessage());
 		}
 		
@@ -128,11 +124,16 @@ public class SisyphusI {
 	 * Run in "Command line mode", that is, batch mode.
 	 */
 	protected void runCommandLineMode() {
+		Node bestNode;
 		try {
 			long timeLimit = new Long(args[1]).longValue();
+			String fileName = args[0] + ".out";
+			
 			System.out.println("Performing search for " + timeLimit + "ms");
 			try {
-				doSearch(env, timeLimit);
+				bestNode = doSearch(env, timeLimit);
+				createOutputFile(bestNode, fileName);
+				System.out.println(bestNode);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
@@ -152,31 +153,33 @@ public class SisyphusI {
 	 * @param timeLimit
 	 *            A time limit in milliseconds.
 	 */
-	protected void doSearch(Environment env, long timeLimit) {
-
-		Timer timeout = new Timer(false);
+	protected Node doSearch(Environment env, long timeLimit) {
+		//timer to stop the creation of new generations once time is up
+		final Timer timeout = new Timer(false);
 		TimerTask killSearch = new TimerTask(){
 			@Override
 			public void run() {
 				search = false;
-				createOutputFile(bestNode, "solution.out");
 				this.cancel();
+				timeout.cancel();
 			}
 			
 		};
 		timeout.schedule(killSearch, (long) (timeLimit * 0.9));
 		int GenSize = 10;
-		
+		//create the first generation
 		Generation currentGen = createFirstGen(env, GenSize);
 		while(search){
 			//mutate generations with currentGen as input
 			currentGen.mutate(1,1,1, env);
-			//cull generations of mutated gens
-			currentGen = cullGeneration(currentGen, 1000, (float) 0.8, (float) 0.2);
-			System.out.println(currentGen);
-			//currentGen = current generated generation
-			bestNode = currentGen.bestNode();
+			//evaluate each of the nodes in the generation
+			currentGen.evaluate(env, con);
+			//cull generations of mutated nodes
+			currentGen = cullGeneration(currentGen, 10, (float) 0.8, (float) 0.2);
 		}	
+		
+		//retrieve the best of the nodes in the current generation
+		return currentGen.bestNode();
 	}
 	private Generation createFirstGen(Environment env, int genSize) {
 		Random rand = new Random();
@@ -192,7 +195,6 @@ public class SisyphusI {
 			// Assign each person a random room
 			while(people.hasNext()){
 				Person personVal = people.next();
-				// the room
 				Room roomVal;
 				//Is this person hard-assigned a room?
 				//If they are, the roomVal becomes the room that they are assigned to
@@ -200,7 +202,10 @@ public class SisyphusI {
 				if (env.assignments.containsKey(personVal)){
 					roomVal = rooms.get(env.assignments.get(personVal));
 				}else{
-					 roomVal = roomList.get(rand.nextInt(roomList.size()));
+					do{
+						roomVal = roomList.get(rand.nextInt(roomList.size()));
+					}while(assignment.containsKey(roomVal.getRoomNumber()) 
+							&& assignment.get(roomVal.getRoomNumber()).size()== 2);
 				}	
 				// The keys are the room numbers
 				if (assignment.containsKey(roomVal.getRoomNumber())) {
@@ -219,18 +224,25 @@ public class SisyphusI {
 	public Generation cullGeneration(Generation gen, int desiredSize, float bestPercentage, float worstPercentage){
 		Generation newGen = new Generation(gen.genNumber);
 		
-		// The porportion of nodes to grab from both the best nodes and
+		// The proportion of nodes to grab from both the best nodes and
 		// the worst nodes
-		float desirePercentage = (float) desiredSize / gen.facts.size();
+		float desirePercentage = (float) desiredSize / gen.size();
 		
 		Node[] bestNodes = gen.getBestOfGen(bestPercentage);
 		Node[] worstNodes = gen.getWorstOfGen(worstPercentage);
-		
-		for(int i = 0; i < Math.round(desirePercentage * bestNodes.length); i++){
+		int counter = Math.round(desirePercentage * (bestNodes.length -1));
+		int counter2 = Math.round(desirePercentage * (worstNodes.length -1));
+		if(counter > bestNodes.length){
+			counter = bestNodes.length -1;
+		}
+		if(counter2 > worstNodes.length){
+			counter2 = worstNodes.length -1;
+		}
+		for(int i = 0; i < counter ; i++){
 			newGen.addFact(bestNodes[i]);
 		}
 		
-		for(int i = 0; i < Math.round(desirePercentage * worstNodes.length); i++){
+		for(int i = 0; i < counter2; i++){
 			newGen.addFact(worstNodes[i]);
 		}
 		

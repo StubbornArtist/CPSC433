@@ -33,6 +33,9 @@ public class Node {
 			this.StringAssignments.put(person, n.getRoom(person));
 		}
 	}
+	public void setScore(int score){
+		this.score = score;
+	}
 	public int numRooms(){
 		return Assignments.size();
 	}

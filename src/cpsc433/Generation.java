@@ -9,25 +9,20 @@ public class Generation {
 	
 	public int genNumber;
 	public HashSet<Node> facts;
-	private LinkedHashMap<Integer, Node> factsIndexed;
-
 	
 	public Generation(int number){
 		this.genNumber = number;
 		this.facts = new HashSet<Node>();
-		//this.factsIndexed = new LinkedHashMap<Integer, Node>();
 	}
 	
 	public void addFact(LinkedHashMap<String, Assignment> a, LinkedHashMap<String, String> b){
 		Node nodeN = new Node(a);
 		nodeN.putStrings(b);
 		this.facts.add(nodeN);
-		//this.factsIndexed.put(factsIndexed.size() , nodeN);
 	}
 
 	public void addFact(Node n){
 		this.facts.add(n);
-		//this.factsIndexed.put(factsIndexed.size() , n);
 	}
 	
 	public Node factAt(int index){
@@ -88,7 +83,7 @@ public class Generation {
 	public Node bestNode(){
 		Iterator<Node> nodes = facts.iterator();
 		Node maxNode = null;
-		int maxScore = 0;
+		int maxScore = Integer.MIN_VALUE;
 		
 		while(nodes.hasNext()){
 			Node n = nodes.next();
@@ -98,6 +93,14 @@ public class Generation {
 			}	
 		}
 		return maxNode;
+	}
+	
+	public void evaluate(Environment e, Constraints c){
+		Iterator<Node> nodes = facts.iterator();
+		while(nodes.hasNext()){
+			Node n = nodes.next();
+			n.setScore(c.eval(n, e));	
+		}
 	}
 		
 	/**
@@ -151,7 +154,7 @@ public class Generation {
 	@Override
 	public String toString(){
 		Iterator<Node> nodes = facts.iterator();
-		String gen = "Generation" + genNumber + "\n{";
+		String gen = "Generation " + genNumber + "\n{";
 		while(nodes.hasNext()){
 			gen += nodes.next();
 			if(nodes.hasNext()) gen+=",\n";
