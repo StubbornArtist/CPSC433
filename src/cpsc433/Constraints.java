@@ -955,16 +955,16 @@ public class Constraints {
 	public int eval(Node n, Environment e) {
 		int score = 1000;
 		if (!hardConstraint1(n.StringAssignments, e)) {
-			return 0;
+			return -1;
 		}
 		if (!hardConstraint2(n.Assignments, e)) {
-			return 0;
+			return -1;
 		}
 		if (!hardConstraint3(n.Assignments, e)) {
-			return 0;
+			return -1;
 		}
 		if (!hardConstraint4(n.Assignments, e)) {
-			return 0;
+			return -1;
 		}
 		score += softConstraintConglomerate23(n.StringAssignments, e);
 		System.out.println("Soft Constraint 2, 3 penalty: " + score);

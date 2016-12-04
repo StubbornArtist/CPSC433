@@ -67,14 +67,11 @@ public class Generation {
 		Node n2 = factAt(num1);
 		Person p;
 		Assignment a1;
-		Assignment a2;
 		Room room;
-		do{
-			a1 = n1.peopleAt(rand.nextInt(n1.numRooms()));
-			p = a1.randomPerson();
-			room = n2.getRoom(p);	
-			a2 = n2.getAssignment(room.getRoomNumber());
-		}while(a1.size() > 1 || a2.size() > 1);
+
+		a1 = n1.peopleAt(rand.nextInt(n1.numRooms()));
+		p = a1.randomPerson();
+		room = n2.getRoom(p);	
 	
 		n1.remove(p, a1.getRoom());
 		n1.put(p, room);
@@ -90,7 +87,7 @@ public class Generation {
 		
 		while(nodes.hasNext()){
 			Node n = nodes.next();
-			if(n.score > maxScore && !(n.score == 0)){
+			if(n.score > maxScore && !(n.score == -1)){
 				maxScore = n.score;
 				maxNode = n;
 			}	

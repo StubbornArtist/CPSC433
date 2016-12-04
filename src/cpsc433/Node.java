@@ -110,10 +110,8 @@ public class Node {
 		Person person;
 		Assignment a;
 
-		do{
-			room = roomAt(rand.nextInt(numRooms()));
-			a = Assignments.get(room.getRoomNumber());
-		}while(a.size() > 1);
+		room = roomAt(rand.nextInt(numRooms()));
+		a = Assignments.get(room.getRoomNumber());
 		
 		room2 = roomAt(rand.nextInt(numRooms()));
 		person = Assignments.get(room.getRoomNumber()).randomPerson();
