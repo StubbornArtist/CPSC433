@@ -5,8 +5,8 @@ import java.util.Iterator;
 
 public class Project extends Group{
 	private boolean largeProject;
-	private HashSet<String> heads;	// Name of the person who heads the group
-	private HashSet<String> members;	// A HashSet of all the members of the group
+	private HashSet<String> heads = new HashSet<String>();	// Name of the person who heads the group
+	private HashSet<String> members = new HashSet<String>();	// A HashSet of all the members of the group
 	
 	public Project(String name){
 		super(name);
