@@ -4,13 +4,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
-
-
-
 public class KnaaawledgeChecker {
 
 	public KnaaawledgeChecker() {
-
 	}
 
 	public boolean checkTwoToARoom(Assignment a) {
@@ -55,64 +51,63 @@ public class KnaaawledgeChecker {
 		}
 		return true;
 	}
-	
-	//
-	public boolean checkSofties(Assignment a, Environment e){
+
+	public boolean checkSofties(Assignment a, Environment e) {
 		boolean ret = false;
 		int score = 0;
-		
+
 		HashSet<Person> people = a.getPeople();
 		Room assigned = a.getRoom();
 		boolean secretary = false;
 		boolean smoker = false;
 		boolean hacker = false;
-	
-		//check constraint 16
-		if(assigned.getRoomSize() == 's'){
-			if(people.size() > 1){
-				score -=25;
+
+		// check constraint 16
+		if (assigned.getRoomSize() == 's') {
+			if (people.size() > 1) {
+				score -= 25;
 			}
-		}	
-		for(Person per:people){				
-			//check constraint 1
-			for(Group grp: e.getGroups().values()){
-				if(grp.getHeads().contains(per)){
-					if(assigned.getRoomSize() != 'l'){
+		}
+		for (Person per : people) {
+			// check constraint 1
+			for (Group grp : e.getGroups().values()) {
+				if (grp.getHeads().contains(per)) {
+					if (assigned.getRoomSize() != 'l') {
 						score -= 40;
 						break;
 					}
 				}
-			}	
-			//check constraint 4
-			if(per.hasRole("secretary")){
+			}
+			// check constraint 4
+			if (per.hasRole("secretary")) {
 				secretary = true;
 			}
-			if(!per.hasRole("secretary")){
-				if(secretary){
+			if (!per.hasRole("secretary")) {
+				if (secretary) {
 					score -= 5;
 				}
 			}
-			//check constraint 11
-			if(per.smokes){
+			// check constraint 11
+			if (per.smokes) {
 				smoker = true;
 			}
-			if(!per.smokes){
-				if(smoker){
+			if (!per.smokes) {
+				if (smoker) {
 					score -= 50;
 				}
 			}
-			//check constraint 13
-			if(per.hacks && !per.hasRole("secretary")){
+			// check constraint 13
+			if (per.hacks && !per.hasRole("secretary")) {
 				hacker = true;
 			}
-			if(!per.hacks && !per.hasRole("secretary")){
-				if(hacker){
+			if (!per.hacks && !per.hasRole("secretary")) {
+				if (hacker) {
 					score -= 2;
 				}
 			}
 		}
-		
-		if(score > -70){
+
+		if (score > -70) {
 			ret = true;
 		}
 		return ret;
