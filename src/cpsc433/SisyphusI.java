@@ -28,6 +28,9 @@ import java.util.TimerTask;
  */
 public class SisyphusI {
 
+	
+	
+	
 	/**
 	 * Merely create a new SisypyusI object, and let the constructor run the
 	 * program.
@@ -42,6 +45,8 @@ public class SisyphusI {
 	protected final String[] args;
 	protected Environment env;
 	protected Constraints con;
+	public boolean search = true;
+	private Node bestNode = null;
 
 	public SisyphusI(String[] args) {
 		this.args = args;
@@ -60,7 +65,6 @@ public class SisyphusI {
 		} else {
 			printSynopsis();
 		}
-		
 		createShutdownHook();
 
 		if (args.length > 1) { // using command-line arguments
@@ -103,19 +107,19 @@ public class SisyphusI {
 	protected void killShutdownHook() {
 	}
 	
-	protected void createOutputFile(Generation g, String fileName){
+	protected void createOutputFile(Node n, String fileName){
 		try {
 			FileWriter writer = new FileWriter(fileName);
-			Node solution = g.bestFact();
-			Iterator<String> peopleIt = solution.StringAssignments.keySet().iterator();
+			Iterator<String> peopleIt = n.StringAssignments.keySet().iterator();
 			while(peopleIt.hasNext()){
 				String person = peopleIt.next();
-				String room = solution.StringAssignments.get(person);
+				String room = n.StringAssignments.get(person);
 				writer.write("assign-to(" + person + ", " + room + ")\n" );
+				writer.write("SCORE: " + n.score);
 			}
 			writer.close();
 		} catch (Exception e) {
-			System.out.println("IO WRITER ERROR OCCURED");
+			System.out.println("IO WRITER ERROR OCCURED" + e.getMessage());
 		}
 		
 	}
@@ -149,19 +153,31 @@ public class SisyphusI {
 	 *            A time limit in milliseconds.
 	 */
 	protected void doSearch(Environment env, long timeLimit) {
-		Generation one = createFirstGen(env, 100);
-		
-			Iterator<Node> nodes = one.facts.iterator();
-			while(nodes.hasNext()){
-				Node node = nodes.next();
-				node.score = con.eval(node, env);
-				System.out.println(node);
-				System.out.println(node.score);
-			}
-			one.mutate(2,1,0,env);
-	
-	}
 
+		Timer timeout = new Timer(false);
+		TimerTask killSearch = new TimerTask(){
+			@Override
+			public void run() {
+				search = false;
+				createOutputFile(bestNode, "solution.out");
+				this.cancel();
+			}
+			
+		};
+		timeout.schedule(killSearch, (long) (timeLimit * 0.9));
+		int GenSize = 10;
+		
+		Generation currentGen = createFirstGen(env, GenSize);
+		while(search){
+			//mutate generations with currentGen as input
+			currentGen.mutate(1,1,1, env);
+			//cull generations of mutated gens
+			currentGen = cullGeneration(currentGen, 1000, (float) 0.8, (float) 0.2);
+			System.out.println(currentGen);
+			//currentGen = current generated generation
+			bestNode = currentGen.bestNode();
+		}	
+	}
 	private Generation createFirstGen(Environment env, int genSize) {
 		Random rand = new Random();
 		Generation genOne = new Generation(0);
@@ -181,8 +197,8 @@ public class SisyphusI {
 				//Is this person hard-assigned a room?
 				//If they are, the roomVal becomes the room that they are assigned to
 				//no means we assign them the random room	
-				if (env.assignments.containsKey(personVal.name)){
-					roomVal = rooms.get(env.assignments.get(personVal.name));
+				if (env.assignments.containsKey(personVal)){
+					roomVal = rooms.get(env.assignments.get(personVal));
 				}else{
 					 roomVal = roomList.get(rand.nextInt(roomList.size()));
 				}	
@@ -198,10 +214,29 @@ public class SisyphusI {
 			genOne.addFact(assignment,StringAssigns);
 		}
 		return genOne;
-		
-		
 	}
 
+	public Generation cullGeneration(Generation gen, int desiredSize, float bestPercentage, float worstPercentage){
+		Generation newGen = new Generation(gen.genNumber);
+		
+		// The porportion of nodes to grab from both the best nodes and
+		// the worst nodes
+		float desirePercentage = (float) desiredSize / gen.facts.size();
+		
+		Node[] bestNodes = gen.getBestOfGen(bestPercentage);
+		Node[] worstNodes = gen.getWorstOfGen(worstPercentage);
+		
+		for(int i = 0; i < Math.round(desirePercentage * bestNodes.length); i++){
+			newGen.addFact(bestNodes[i]);
+		}
+		
+		for(int i = 0; i < Math.round(desirePercentage * worstNodes.length); i++){
+			newGen.addFact(worstNodes[i]);
+		}
+		
+		return newGen;
+	}
+		
 	protected void printResults() {
 		System.out.println("Would print results here, but the search isn't implemented yet.");
 	}
@@ -234,5 +269,4 @@ public class SisyphusI {
 			System.err.println("exiting: " + e.toString());
 		}
 	}
-	
 }

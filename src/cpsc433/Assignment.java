@@ -11,6 +11,7 @@ public class Assignment {
 	private Room room;
 	private HashSet<Person> people;
 	private LinkedHashMap<Integer,Person> peopleIndexed;
+	private LinkedHashMap<Person, Integer> peopleIndices;
 	
 	public Assignment(){
 		this.room = null;
@@ -44,13 +45,15 @@ public class Assignment {
 		
 	public Person randomPerson(){
 		Random rand = new Random();
-		Integer i = rand.nextInt(peopleIndexed.size());
-		return peopleIndexed.get(i);
+		Integer i = rand.nextInt(people.size());
+		return personAt(i);
 	}
 	
 	public void removePerson(Person p){
 		people.remove(p);
-		generateIndexed();
+		Integer index = peopleIndices.get(p);
+		peopleIndexed.remove(index);
+		peopleIndices.remove(p);
 	}
 	
 	public boolean isEmpty(){
@@ -60,6 +63,20 @@ public class Assignment {
 	public void addPerson(Person p){
 		this.people.add(p);
 		this.peopleIndexed.put(peopleIndexed.size(), p);
+		this.peopleIndices.put(p, peopleIndices.size());
+	}
+	
+	public Person personAt(int index){
+		Iterator<Person> people = this.people.iterator();
+		int count = 0;
+		while(people.hasNext()){
+			if(count == index){
+				return people.next();
+			}
+			people.next();
+			count++;
+		}
+		return null;
 	}
 			
 	public boolean contains(Person p){
@@ -77,9 +94,12 @@ public class Assignment {
 	private void generateIndexed(){
 		Iterator<Person> peopleIt = this.people.iterator();
 		this.peopleIndexed = new LinkedHashMap<Integer,Person>();
+		this.peopleIndices = new LinkedHashMap<Person, Integer>();
 		Integer count = 0;
 		while(peopleIt.hasNext()){
-			this.peopleIndexed.put(count, peopleIt.next());
+			Person p = peopleIt.next();
+			this.peopleIndexed.put(count, p);
+			this.peopleIndices.put(p, count);
 			count++;
 		}
 	}

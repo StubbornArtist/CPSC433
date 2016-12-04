@@ -10,13 +10,13 @@ public class Node {
 	public LinkedHashMap<String, String> StringAssignments;
 	public LinkedHashMap<String, Assignment> Assignments;
 	private LinkedHashMap<Integer, String> roomKeys;
+	private LinkedHashMap<String, Integer> keyIndices;
 	public int score;
-	
 	
 	public Node(LinkedHashMap<String, Assignment> assigns){
 		this.Assignments = assigns;
 		this.score = 1000;
-		generateRoomKeys();
+		//generateRoomKeys();
 	}
 	public Node (Node n){
 		this.Assignments = new LinkedHashMap<String, Assignment>();
@@ -30,20 +30,52 @@ public class Node {
 		assigns = n.StringAssignments.keySet().iterator();
 		while(assigns.hasNext()){
 			String person = assigns.next();
-			this.StringAssignments.put(person, getRoom(person));
+			this.StringAssignments.put(person, n.getRoom(person));
 		}
 	}
-	
+	public int numRooms(){
+		return Assignments.size();
+	}
+	public int numPeople(){
+		return StringAssignments.size();
+	}
 	public void putStrings(LinkedHashMap<String, String> a){
 		this.StringAssignments = a;
 	}
-	public Assignment randomAssignment(){
-		Random rand = new Random();
-		return Assignments.get(roomKeys.get(rand.nextInt(roomKeys.size())));
+	public Assignment peopleAt(int index){
+		Iterator<String> assigns = Assignments.keySet().iterator();
+		int count = 0;
+		while(assigns.hasNext()){
+			if(count == index){
+				return Assignments.get(assigns.next());
+			}
+			assigns.next();
+			count++;
+		}
+		return null;
+	}
+	public Room roomAt(int index){
+		Iterator<Assignment> rooms = Assignments.values().iterator();
+		int count = 0;
+		while(rooms.hasNext()){
+			if(count == index){
+				return rooms.next().getRoom();
+			}
+			rooms.next();
+			count++;
+		}
+		return null;
 	}
 	public Room getRoom(Person person){
-		return Assignments.get(StringAssignments.get(person.name)).getRoom();
+		String r = getRoom(person.name);
+		Assignment as = Assignments.get(r);
+		if(as != null){
+			return Assignments.get(r).getRoom();
+		} else {
+			return null;
+		}
 	}
+	
 	public String getRoom(String person){
 		return StringAssignments.get(person);
 	}
@@ -55,15 +87,15 @@ public class Node {
 		StringAssignments.put(p.name, r.getRoomNumber());
 		if(!Assignments.containsKey(r.getRoomNumber())){
 			Assignments.put(r.getRoomNumber(), new Assignment(r,p));
+		}else{
+			Assignments.get(r.getRoomNumber()).addPerson(p);
 		}
-		Assignments.get(r.getRoomNumber()).addPerson(p);
 	}
 	public void remove(Person p, Room r){
 		StringAssignments.remove(p.name);
 		Assignments.get(r.getRoomNumber()).removePerson(p);
 		if(Assignments.get(r.getRoomNumber()).isEmpty()){
 			Assignments.remove(r.getRoomNumber());
-			generateRoomKeys();
 		}
 	}
 	public Node changeRooms(Environment e){
@@ -73,11 +105,12 @@ public class Node {
 		Room room;
 		Room room2;
 		Person person;
-		//do{
-			room = Assignments.get(roomKeys.get(rand.nextInt(roomKeys.size()))).getRoom();
-			room2 = Assignments.get(roomKeys.get(rand.nextInt(roomKeys.size()))).getRoom();
-			person = Assignments.get(room).randomPerson();
-		//}while(e.assignments.containsKey(person.name));
+
+		room = roomAt(rand.nextInt(numRooms()));
+		room2 = roomAt(rand.nextInt(numRooms()));
+		Assignment a = Assignments.get(room.getRoomNumber());
+		person = a.randomPerson();
+		
 		newNode.remove(person, room);
 		newNode.put(person, room2);	
 		return newNode;
@@ -91,19 +124,17 @@ public class Node {
 		Room room2;
 		Person person1;
 		Person person2;
-		//do{
-			room1 = Assignments.get(roomKeys.get(rand.nextInt(roomKeys.size()))).getRoom();
-			room2 = Assignments.get(roomKeys.get(rand.nextInt(roomKeys.size()))).getRoom();
-			person1 = Assignments.get(room1).randomPerson();
-			person2 = Assignments.get(room2).randomPerson();
-		//}while(e.getAssignments().containsKey(person1.name) 
-				//|| e.getAssignments().containsKey(person2.name));
-			newNode.remove(person1,room1);
-			newNode.put(person1,room2);
-			newNode.remove(person2, room2);
-			newNode.put(person2, room1);		
-		return newNode;
 		
+		room1 = roomAt(rand.nextInt(numRooms()));
+		room2 = roomAt(rand.nextInt(numRooms()));
+		person1 = Assignments.get(room1.getRoomNumber()).randomPerson();
+		person2 = Assignments.get(room2.getRoomNumber()).randomPerson();
+		
+		newNode.remove(person1,room1);
+		newNode.put(person1,room2);
+		newNode.remove(person2, room2);
+		newNode.put(person2, room1);		
+		return newNode;
 	}
 	
 	@Override
@@ -132,9 +163,12 @@ public class Node {
 	private void generateRoomKeys(){
 		Iterator<String> rooms = Assignments.keySet().iterator();
 		this.roomKeys = new LinkedHashMap<Integer, String>();
+		this.keyIndices = new LinkedHashMap<String, Integer>();
 		Integer count = 0;
 		while(rooms.hasNext()){
-			roomKeys.put(count, rooms.next());
+			String room = rooms.next();
+			roomKeys.put(count, room);
+			keyIndices.put(room, count);
 			count++;
 		}
 		
