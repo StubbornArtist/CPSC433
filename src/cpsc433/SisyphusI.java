@@ -262,17 +262,19 @@ public class SisyphusI {
 			newGen.addFact(worstNodes[i]);
 		}
 		
+		HashSet<Node> newHashSet = new HashSet<Node>();
 		// Remove all nodes from the new generation that have a score of 0
 		for(Node n : newGen.facts){
-			if (n.score < 0){
-				newGen.facts.remove(n);
+			if (n.score >= 0){
+				newHashSet.add(n);
 			}
 		}
 		
+		
+		
 		// Pad the new generation with new nodes if we have yet to hit the desired size
-		for (int i = newGen.size(); i < desiredSize; i++) {
+		for (int i = newHashSet.size(); i < desiredSize; i++) {
 			LinkedHashMap<String, Assignment> assignment = new LinkedHashMap<String, Assignment>();
-			LinkedHashMap<String, String> StringAssigns = new LinkedHashMap<String, String>();
 			Iterator<Person> people = env.getPeople().values().iterator();
 			LinkedHashMap<String, Room> rooms = env.getRooms();
 			ArrayList<Room> roomList = new ArrayList<Room>(rooms.values());
@@ -295,16 +297,15 @@ public class SisyphusI {
 				// The keys are the room numbers
 				if (assignment.containsKey(roomVal.getRoomNumber())) {
 					assignment.get(roomVal.getRoomNumber()).addPerson(personVal);
-					StringAssigns.put(personVal.name, roomVal.getRoomNumber());
 				} else {
 					assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, personVal));
-					StringAssigns.put(personVal.name, roomVal.getRoomNumber());	
 				}
 			}
-			newGen.addFact(assignment,StringAssigns);
+			Node node = new Node(assignment);
+			newHashSet.add(node)
 		}
 		
-		return newGen;
+		return newGen.addFact(newHashSet);
 	}
 		
 	protected void printResults() {
