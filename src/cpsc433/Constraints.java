@@ -667,6 +667,54 @@ public class Constraints {
 		return penalty;
 	}
 	
+	public boolean lessThanTwoARoom(Assignment a) {
+		if(a == null){
+			return true;
+		}
+		if (a.size() > 1) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean checkManager(Assignment a, Environment env) {
+		Iterator<Person> it = null;
+		Person person = null;
+		if(a == null){
+			return true;
+		}
+		HashSet<Person> people = a.getPeople();
+
+		// because we check this, by default if one of them is a manager, we
+		// KNOW it's going to fail
+		if (people.size() > 1) {
+			it = people.iterator();
+			while (it.hasNext()) {
+				person = (Person) it.next();
+				// Check if the current person is a manager
+				if (env.e_manager(person.name)) {
+					return false;
+				}
+
+				// Check if this person is a group head
+				for (Map.Entry<String, Group> group : env.getGroups().entrySet()) {
+					Group g = group.getValue();
+					if (env.e_heads_group(person.name, g.getName())) {
+						return false;
+					}
+				}
+
+				// Check if this person is a project head
+				for (Map.Entry<String, Project> project : env.projects.entrySet()) {
+					Project p = project.getValue();
+					if (env.e_heads_project(person.name, p.getName())) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}	
 	public int eval(Node n, Environment e){
 		int score = 1000;
 		if (!hardConstraint1(n.StringAssignments, e)){
@@ -682,37 +730,21 @@ public class Constraints {
 			return 0;
 		}
 		score += softConstraint1(n.StringAssignments,e);
-		//System.out.println("Soft Constraint 1 penalty: " + score);
 		score += softConstraint2(n.StringAssignments,e);
-		//System.out.println("Soft Constraint 2 penalty: " + score);
 		score += softConstraint3(n.StringAssignments,e);
-		//System.out.println("Soft Constraint 3 penalty: " + score);
 		score += softConstraint4(n.StringAssignments,e);
-		//System.out.println("Soft Constraint 4 penalty: " + score);
 		score += softConstraint5(n.StringAssignments,e);
-		//System.out.println("Soft Constraint 5 penalty: " + score);
 		score += softConstraint6(n.StringAssignments,e);
-		//System.out.println("Soft Constraint 6 penalty: " + score);
 		score += softConstraint7(n.StringAssignments,e);
-		//System.out.println("Soft Constraint 7 penalty: " + score);
 		score += softConstraint8(n.StringAssignments,e);
-		//System.out.println("Soft Constraint 8 penalty: " + score);
 		score += softConstraint9(n.StringAssignments,e);
-		//System.out.println("Soft Constraint 9 penalty: " + score);
 		score += softConstraint10(n.StringAssignments,e);
-		//System.out.println("Soft Constraint 10 penalty: " + score);
 		score += softConstraint11(n.Assignments,e);
-		//System.out.println("Soft Constraint 11 penalty: " + score);
 		score += softConstraint12(n.Assignments,e);
-		//System.out.println("Soft Constraint 12 penalty: " + score);
 		score += softConstraint13(n.Assignments,e);
-		//System.out.println("Soft Constraint 13 penalty: " + score);
 		score += softConstraint14(n.Assignments,e);
-		//System.out.println("Soft Constraint 14 penalty: " + score);
 		score += softConstraint15(n.Assignments,e);
-		//System.out.println("Soft Constraint 15 penalty: " + score);
 		score += softConstraint16(n.Assignments,e);
-		//System.out.println("Soft Constraint 16 penalty: " + score);
 		
 		return score;
 	}

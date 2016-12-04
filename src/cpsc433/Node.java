@@ -101,18 +101,22 @@ public class Node {
 			Assignments.remove(r.getRoomNumber());
 		}
 	}
-	public Node changeRooms(Environment e){
+	public Node changeRooms(Environment e, Constraints c){
 		Node newNode = new Node(this);
 		
 		Random rand = new Random();
 		Room room;
 		Room room2;
 		Person person;
+		Assignment a;
 
-		room = roomAt(rand.nextInt(numRooms()));
+		do{
+			room = roomAt(rand.nextInt(numRooms()));
+			a = Assignments.get(room.getRoomNumber());
+		}while(!c.lessThanTwoARoom(a));
+		
 		room2 = roomAt(rand.nextInt(numRooms()));
-		Assignment a = Assignments.get(room.getRoomNumber());
-		person = a.randomPerson();
+		person = Assignments.get(room.getRoomNumber()).randomPerson();
 		
 		newNode.remove(person, room);
 		newNode.put(person, room2);	
@@ -162,20 +166,5 @@ public class Node {
 		
 		return node;
 	}
-	
-	private void generateRoomKeys(){
-		Iterator<String> rooms = Assignments.keySet().iterator();
-		this.roomKeys = new LinkedHashMap<Integer, String>();
-		this.keyIndices = new LinkedHashMap<String, Integer>();
-		Integer count = 0;
-		while(rooms.hasNext()){
-			String room = rooms.next();
-			roomKeys.put(count, room);
-			keyIndices.put(room, count);
-			count++;
-		}
-		
-	}
-
 }
 

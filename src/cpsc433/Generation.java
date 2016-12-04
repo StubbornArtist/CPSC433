@@ -41,13 +41,13 @@ public class Generation {
 		return facts.size();
 	}
 	
-	public void mutate(int numGenSwap, int numFactSwap, int numChange, Environment e){
+	public void mutate(int numGenSwap, int numFactSwap, int numChange, Environment e, Constraints c){
 		Random rand = new Random();
 		for(int i = 0; i < numGenSwap; i++){
-			this.swap(e);
+			this.swap(e,c);
 		}
 		for(int i = 0; i < numFactSwap; i++){
-			addFact(factAt(rand.nextInt(size())).changeRooms(e));
+			addFact(factAt(rand.nextInt(size())).changeRooms(e,c));
 		}
 		for(int i = 0; i < numChange; i++){
 			addFact(factAt(rand.nextInt(size())).swapRooms(e));
@@ -55,7 +55,7 @@ public class Generation {
 		genNumber++;
 	}
 	
-	public void swap(Environment e){
+	public void swap(Environment e, Constraints c){
 		Random rand = new Random();
 		int num1 = rand.nextInt(size());
 		int num2;
@@ -67,12 +67,15 @@ public class Generation {
 		Node n2 = factAt(num1);
 		Person p;
 		Assignment a1;
+		Assignment a2;
 		Room room;
-		
-		a1 = n1.peopleAt(rand.nextInt(n1.numRooms()));
-		p = a1.randomPerson();
-		room = n2.getRoom(p);	
-			
+		do{
+			a1 = n1.peopleAt(rand.nextInt(n1.numRooms()));
+			p = a1.randomPerson();
+			room = n2.getRoom(p);	
+			a2 = n2.getAssignment(room.getRoomNumber());
+		}while(!c.lessThanTwoARoom(a1) || !c.lessThanTwoARoom(a2));
+	
 		n1.remove(p, a1.getRoom());
 		n1.put(p, room);
 		
@@ -87,7 +90,7 @@ public class Generation {
 		
 		while(nodes.hasNext()){
 			Node n = nodes.next();
-			if(n.score > maxScore){
+			if(n.score > maxScore && !(n.score == 0)){
 				maxScore = n.score;
 				maxNode = n;
 			}	
