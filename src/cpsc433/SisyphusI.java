@@ -116,18 +116,26 @@ public class SisyphusI {
 	protected void createOutputFile(Node n, String fileName){
 		try {
 			FileWriter writer = new FileWriter(fileName);
-			Iterator<String> peopleIt = n.StringAssignments.keySet().iterator();
-			while(peopleIt.hasNext()){
-				String person = peopleIt.next();
-				String room = n.StringAssignments.get(person);
-				writer.write("assign-to(" + person + ", " + room + ")\n" );
-				writer.write("SCORE: " + n.score);
+
+			if (n == null){
+				writer.write("NO SOLUTION WAS FOUND! PROBLEM IS UNSOLVABLE, OR NOT ENOUGH TIME IS GIVEN");
 			}
+			
+			else{
+				Iterator<String> peopleIt = n.StringAssignments.keySet().iterator();
+				writer.write("SCORE: " + n.score + "\n");
+				while(peopleIt.hasNext()){
+					String person = peopleIt.next();
+					String room = n.StringAssignments.get(person);
+					writer.write("assign-to(" + person + ", " + room + ")\n" );
+				}
+			}
+			
 			writer.close();
-		} catch (Exception e) {
+			
+			} catch (Exception e) {
 			System.out.println("IO WRITER ERROR OCCURED");
 		}
-		
 	}
 
 	/**
@@ -175,8 +183,12 @@ public class SisyphusI {
 		int GenSize = 1000;
 		
 		Generation one = createFirstGen(env, GenSize);
+		Generation currentGen = one;
 		while(search){
-			Generation currentGen = one;
+			for (Node n : currentGen.facts){
+				con.eval(n, env);
+			}
+			
 			//mutate generations with currentGen as input
 			
 			//cull generations of outputted mutated gens
