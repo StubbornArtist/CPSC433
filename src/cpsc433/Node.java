@@ -13,8 +13,7 @@ public class Node {
 	
 	public Node(LinkedHashMap<String, Assignment> assigns){
 		this.Assignments = assigns;
-		this.score = 1000;
-		//generateRoomKeys();
+		this.score = 1000000;
 	}
 	public Node (Node n){
 		this.Assignments = new LinkedHashMap<String, Assignment>();
@@ -68,13 +67,7 @@ public class Node {
 		return null;
 	}
 	public Room getRoom(Person person){
-		String r = getRoom(person.name);
-		Assignment as = Assignments.get(r);
-		if(as != null){
-			return Assignments.get(r).getRoom();
-		} else {
-			return null;
-		}
+		return Assignments.get(getRoom(person.name)).getRoom();
 	}
 	
 	public String getRoom(String person){
@@ -107,7 +100,6 @@ public class Node {
 		Room room2;
 		Person person;
 		Assignment a;
-		Assignment b;
 
 		room = roomAt(rand.nextInt(numRooms()));
 		a = Assignments.get(room.getRoomNumber());

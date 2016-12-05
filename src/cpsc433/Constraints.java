@@ -997,7 +997,7 @@ public class Constraints {
 	}
 	
 	public int eval(Node n, Environment e) {
-		int score = 1000;
+		int score = 1000000;
 		if (!hardConstraint1(n.StringAssignments, e)) {
 			//System.out.println("person is not assigned");
 			return -1;
@@ -1015,19 +1015,19 @@ public class Constraints {
 			return -1;
 		}
 		score += softConstraintConglomerate23(n.StringAssignments, e);
-		System.out.println("Soft Constraint 2, 3 penalty: " + score);
+		//System.out.println("Soft Constraint 2, 3 penalty: " + score);
 		score += softConstraintConglomerate567(n.StringAssignments, e);
-		System.out.println("Soft Constraint 5, 6, 7 penalty: " + score);
+		//System.out.println("Soft Constraint 5, 6, 7 penalty: " + score);
 		score += softConstraintConglomerate8910(n.StringAssignments, e);
-		System.out.println("Soft Constraint 8, 9, 10 penalty: " + score);
+		//System.out.println("Soft Constraint 8, 9, 10 penalty: " + score);
 		score += softConstraint12(n.Assignments, e);
-		System.out.println("Soft Constraint 12 penalty: " + score);
+		//System.out.println("Soft Constraint 12 penalty: " + score);
 		score += softConstraint14(n.Assignments, e);
-		System.out.println("Soft Constraint 14 penalty: " + score);
+		//System.out.println("Soft Constraint 14 penalty: " + score);
 		score += softConstraint15(n.Assignments, e);
-		System.out.println("Soft Constraint 15 penalty: " + score);
+		//System.out.println("Soft Constraint 15 penalty: " + score);
 		score += softConstraintConglomerate14111316(n.Assignments, e);
-		System.out.println("Soft Constraints 1, 4, 11, 13, 16 penalty: " + score);
+		//System.out.println("Soft Constraints 1, 4, 11, 13, 16 penalty: " + score);
 
 		return score;
 	}

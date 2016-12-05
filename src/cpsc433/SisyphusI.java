@@ -176,7 +176,6 @@ public class SisyphusI {
 		int GenSize = 500;
 		// create the first generation
 		Generation currentGen = createFirstGen(env, GenSize);
-		System.out.println(env.getHeads());
 		while (search) {
 			// mutate generations with currentGen as input
 			currentGen.mutate(1, 1, 1, env);
@@ -185,7 +184,7 @@ public class SisyphusI {
 			// cull generations of mutated nodes
 			currentGen = cullGeneration(currentGen, GenSize, (float) 0.8, (float) 0.2);
 			bestNode = currentGen.bestNode();
-			// System.out.println(currentGen);
+			System.out.println(currentGen.size());
 		}
 
 		// retrieve the best of the nodes in the current generation
@@ -210,8 +209,6 @@ public class SisyphusI {
 			for(String head: env.getHeads()){
 				heads.add(head);
 			}
-			
-
 			// Assign our hard assignments
 			for (String person : env.getAssignments().keySet()) {
 				// grab the person
@@ -221,7 +218,7 @@ public class SisyphusI {
 				// create the assignments
 				Assignment a = new Assignment(r, p);
 				assignment.put(r.getRoomNumber(), a);
-				StringAssigns.put(r.getRoomNumber(), p.name);
+				StringAssigns.put(p.name,r.getRoomNumber());
 				// if they are a head, remove them from the head list, as well
 				// as remove the room from the room list
 				if (heads.contains(p.name)) {
@@ -265,15 +262,13 @@ public class SisyphusI {
 				Room roomToUse = roomList.get(roomNumberToUse);
 
 				// Find a room that has less than two people in it
-				while (assignment.containsKey(roomToUse.getRoomNumber()) && assignment.get(roomToUse).size() > 2) {
+				while (assignment.containsKey(roomToUse.getRoomNumber()) && assignment.get(roomToUse.getRoomNumber()).size() > 2) {
 					roomNumberToUse = rand.nextInt(roomList.size());
 					roomToUse = roomList.get(roomNumberToUse);
 				}
 				
 				//assign them the room
 				Assignment a = new Assignment(roomToUse, p);
-				
-				
 				// set the assignments in the hasMap
 				assignment.put(roomToUse.getRoomNumber(), a);
 				StringAssigns.put(p.name, roomToUse.getRoomNumber());
