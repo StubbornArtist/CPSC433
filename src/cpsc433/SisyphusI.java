@@ -248,11 +248,11 @@ public class SisyphusI {
 		Node[] worstNodes = gen.getWorstOfGen(worstPercentage);
 		
 		for(int i = 0; i < Math.round(desirePercentage * bestNodes.length); i++){
-			newGen.addFact(bestNodes[i]);
+			newGen.addFact(new Node(bestNodes[i]));
 		}
 		
 		for(int i = 0; i < Math.round(desirePercentage * worstNodes.length); i++){
-			newGen.addFact(worstNodes[i]);
+			newGen.addFact(new Node(worstNodes[i]));
 		}
 		
 		return newGen;
