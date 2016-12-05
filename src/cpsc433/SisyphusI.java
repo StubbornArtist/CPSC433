@@ -44,7 +44,7 @@ public class SisyphusI {
 	protected Environment env;
 	protected Constraints con;
 	public boolean search = true;
-	// private Node bestNode = null;
+	protected Node bestNode = null;
 
 	public SisyphusI(String[] args) {
 		this.args = args;
@@ -130,19 +130,15 @@ public class SisyphusI {
 	 * Run in "Command line mode", that is, batch mode.
 	 */
 	protected void runCommandLineMode() {
-		Node bestNode;
 		try {
 			long timeLimit = new Long(args[1]).longValue();
 			String fileName = args[0] + ".out";
 
 			System.out.println("Performing search for " + timeLimit + "ms");
 			try {
-				bestNode = doSearch(env, timeLimit);
-				createOutputFile(bestNode, fileName);
+				doSearch(env, timeLimit);
 				System.out.println(bestNode);
-				if(bestNode != null){
-					System.out.println(bestNode.score);
-				}
+				createOutputFile(bestNode, fileName);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
@@ -161,8 +157,9 @@ public class SisyphusI {
 	 * @param timeLimit
 	 *            A time limit in milliseconds.
 	 */
-	protected Node doSearch(Environment env, long timeLimit) {
-		Node bestNode = null;
+	protected void doSearch(Environment env, long timeLimit) {
+		//Node bestNode = null;
+		int maxScore = Integer.MIN_VALUE;
 		// timer to stop the creation of new generations once time is up
 		final Timer timeout = new Timer(false);
 		TimerTask killSearch = new TimerTask() {
@@ -179,9 +176,11 @@ public class SisyphusI {
 		// create the first generation
 		Generation currentGen = createFirstGen(env, GenSize);
 		if(currentGen == null){
-			return null;
+			//return null;
 		}
+		currentGen.evaluate(env, con);
 		bestNode = currentGen.bestNode();
+		//System.out.println(currentGen);
 		while (search) {
 			// mutate generations with currentGen as input
 			currentGen.mutate(3, 3, 3, env);
@@ -191,13 +190,20 @@ public class SisyphusI {
 			currentGen = cullGeneration(currentGen, GenSize, (float) 0.8, (float) 0.2);
 			
 			Node curBest = currentGen.bestNode();
-			if(curBest.score > bestNode.score){
-				bestNode = curBest;
+			//System.out.println(curBest);
+			if(curBest != null){
+				System.out.println(curBest.score+" > "+maxScore+" = "+(curBest.score > maxScore));
+				System.out.println(curBest);
+				if(curBest.score > maxScore){
+					bestNode = curBest;
+					maxScore = curBest.score;
+					System.out.println("updating best");
+				}
 			}
 		}
 
 		// retrieve the best of the nodes in the current generation
-		return bestNode;
+		//return bestNode;
 	}
 
 	private Generation createFirstGen(Environment env, int genSize) {
@@ -235,7 +241,9 @@ public class SisyphusI {
 				// if they are a head, remove them from the head list, as well
 				// as remove the room from the room list
 				if (heads.contains(p.name)) {
-					//heads.remove(p.name);
+					heads.remove(p.name);
+				}
+				if (heads.contains(p.name) || assignment.get(r.getRoomNumber()).size() > 1) {
 					roomList.remove(r);
 				}
 			}

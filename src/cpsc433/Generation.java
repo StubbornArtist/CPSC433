@@ -88,16 +88,19 @@ public class Generation {
 	}
 
 	public Node bestNode(){
-		Iterator<Node> nodes = facts.iterator();
+		//Iterator<Node> nodes = facts.iterator();
 		Node maxNode = null;
-		int maxScore = Integer.MIN_VALUE;
-		
-		while(nodes.hasNext()){
-			Node n = nodes.next();
+				//nodes.next();
+		int maxScore = Integer.MIN_VALUE; 
+				//maxNode.score;
+		for(Node n : facts){
+		//while(nodes.hasNext()){
+			//Node n = nodes.next();
 			if(n.score > maxScore){
 				maxScore = n.score;
 				maxNode = n;
-			}	
+			}
+			//}	
 		}
 		return maxNode;
 	}
@@ -125,7 +128,7 @@ public class Generation {
 		Node[] sorted = sortGen();
 		
 		int j = facts.size() - 1;
-		for (int i =0; i < best.length; i++){
+		for (int i = 0; i < best.length; i++){
 			best[i] = sorted[j];
 			j--;
 		}
