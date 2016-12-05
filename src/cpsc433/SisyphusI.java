@@ -255,21 +255,18 @@ public class SisyphusI {
 				// pick a random room
 				int roomNumberToUse = rand.nextInt(roomList.size());
 				Room roomToUse = roomList.get(roomNumberToUse);
-				Assignment a = null;
 
 				// Find a room that has less than two people in it
-				while (a == null) {
-					if (assignment.containsKey(roomToUse.getRoomNumber())) {
-						a = new Assignment(roomToUse, p);
-						if (assignment.get(roomToUse.getRoomNumber()).getPeople().size() >= 2) {
-							roomNumberToUse = rand.nextInt(roomList.size());
-							roomToUse = roomList.get(roomNumberToUse);
-							a = new Assignment(roomToUse, p);
-						}
-					}
+				while (assignment.containsKey(roomToUse.getRoomNumber()) && assignment.get(roomToUse).size() > 2) {
+					roomNumberToUse = rand.nextInt(roomList.size());
+					roomToUse = roomList.get(roomNumberToUse);
 				}
-
-				// set the assignment
+				
+				//assign them the room
+				Assignment a = new Assignment(roomToUse, p);
+				
+				
+				// set the assignments in the hasMap
 				assignment.put(roomToUse.getRoomNumber(), a);
 				StringAssigns.put(p.name, roomToUse.getRoomNumber());
 				// don't need to worry about removing because this is
