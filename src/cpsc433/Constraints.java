@@ -997,23 +997,40 @@ public class Constraints {
 	}
 	
 	public int eval(Node n, Environment e) {
-		int score = 1000000;
+		int score = 0;
 		if (!hardConstraint1(n.StringAssignments, e)) {
 			//System.out.println("person is not assigned");
-			return -1;
+			return Integer.MIN_VALUE;
 		}
 		if (!hardConstraint2(n.Assignments, e)) {
 			//System.out.println("person is assigned two rooms");
-			return -1;
+			return Integer.MIN_VALUE;
 		}
 		if (!hardConstraint3(n.Assignments, e)) {
 			//System.out.println("more than two in a room");
-			return -1;
+			return Integer.MIN_VALUE;
 		}
 		if (!hardConstraint4(n.Assignments, e)) {
 			//System.out.println("head doesn't have their own room");
-			return -1;
+			return Integer.MIN_VALUE;
 		}
+		score += softConstraint1(n.StringAssignments, e);
+		score += softConstraint2(n.StringAssignments, e);
+		score += softConstraint3(n.StringAssignments, e);
+		score += softConstraint4(n.StringAssignments, e);
+		score += softConstraint5(n.StringAssignments, e);
+		score += softConstraint6(n.StringAssignments, e);
+		score += softConstraint7(n.StringAssignments, e);
+		score += softConstraint8(n.StringAssignments, e);
+		score += softConstraint9(n.StringAssignments, e);
+		score += softConstraint10(n.StringAssignments, e);
+		score += softConstraint11(n.Assignments, e);
+		score += softConstraint12(n.Assignments, e);
+		score += softConstraint13(n.Assignments, e);
+		score += softConstraint14(n.Assignments, e);
+		score += softConstraint15(n.Assignments, e);
+		score += softConstraint16(n.Assignments, e);
+		/*
 		score += softConstraintConglomerate23(n.StringAssignments, e);
 		//System.out.println("Soft Constraint 2, 3 penalty: " + score);
 		score += softConstraintConglomerate567(n.StringAssignments, e);
@@ -1028,6 +1045,7 @@ public class Constraints {
 		//System.out.println("Soft Constraint 15 penalty: " + score);
 		score += softConstraintConglomerate14111316(n.Assignments, e);
 		//System.out.println("Soft Constraints 1, 4, 11, 13, 16 penalty: " + score);
+		 */
 
 		return score;
 	}

@@ -173,18 +173,23 @@ public class SisyphusI {
 
 		};
 		timeout.schedule(killSearch, (long) (timeLimit * 0.9));
-		int GenSize = 500;
+		int GenSize = 200;
 		// create the first generation
 		Generation currentGen = createFirstGen(env, GenSize);
+		bestNode = currentGen.bestNode();
 		while (search) {
 			// mutate generations with currentGen as input
-			currentGen.mutate(1, 1, 1, env);
+			currentGen.mutate(3, 3, 3, env);
 			// evaluate each of the nodes in the generation
 			currentGen.evaluate(env, con);
 			// cull generations of mutated nodes
 			currentGen = cullGeneration(currentGen, GenSize, (float) 0.8, (float) 0.2);
-			bestNode = currentGen.bestNode();
-			System.out.println(currentGen.size());
+			
+			Node curBest = currentGen.bestNode();
+			if(curBest.score > bestNode.score){
+				bestNode = curBest;
+			}
+			System.out.println(currentGen.genNumber);
 		}
 
 		// retrieve the best of the nodes in the current generation
@@ -199,7 +204,7 @@ public class SisyphusI {
 			LinkedHashMap<String, Assignment> assignment = new LinkedHashMap<String, Assignment>();
 			LinkedHashMap<String, String> StringAssigns = new LinkedHashMap<String, String>();
 			LinkedHashMap<String, Room> rooms = env.getRooms();
-			ArrayList<Room> roomList = new ArrayList<Room>(rooms.values());
+			ArrayList<Room> roomList = new ArrayList<Room>();
 			HashSet<String> heads = new HashSet<String>();
 			HashSet<Person> pepes = new HashSet<Person>();
 			
@@ -208,6 +213,9 @@ public class SisyphusI {
 			}
 			for(String head: env.getHeads()){
 				heads.add(head);
+			}
+			for(Room r: rooms.values()){
+				roomList.add(r);
 			}
 			// Assign our hard assignments
 			for (String person : env.getAssignments().keySet()) {
@@ -222,16 +230,17 @@ public class SisyphusI {
 				// if they are a head, remove them from the head list, as well
 				// as remove the room from the room list
 				if (heads.contains(p.name)) {
-					heads.remove(p.name);
+					//heads.remove(p.name);
 					roomList.remove(r);
 				}
 				// remove everyone assigned, from the people list
-				pepes.remove(p);
+				//pepes.remove(p);
 			}
 
 			// Assign the heads
 			for (String p : heads) {
 				// grab the person
+				if(StringAssigns.containsKey(p)) continue;
 				Person headPersonToAdd = env.getPeople().get(p);
 				// pick a random room
 				int roomNumberToUse = rand.nextInt(roomList.size());
@@ -249,28 +258,29 @@ public class SisyphusI {
 				// remove the room from the room list because we shouldnt put
 				// anyone else here
 				roomList.remove(roomNumberToUse);
-				// remove the head from the person list because we are no longer
-				// worried about them
-				pepes.remove(env.getPeople().get(p));
 			}
 
 			// Assign everyone else
 			for (Person p : pepes) {
-
 				// pick a random room
+				if(StringAssigns.containsKey(p.name)) continue;
 				int roomNumberToUse = rand.nextInt(roomList.size());
 				Room roomToUse = roomList.get(roomNumberToUse);
 
 				// Find a room that has less than two people in it
-				while (assignment.containsKey(roomToUse.getRoomNumber()) && assignment.get(roomToUse.getRoomNumber()).size() > 2) {
+				while (assignment.containsKey(roomToUse.getRoomNumber()) && assignment.get(roomToUse.getRoomNumber()).size() > 1) {
 					roomNumberToUse = rand.nextInt(roomList.size());
 					roomToUse = roomList.get(roomNumberToUse);
 				}
-				
+				if(assignment.containsKey(roomToUse.getRoomNumber())){
+					assignment.get(roomToUse.getRoomNumber()).addPerson(p);
+				}
+				else{
+					assignment.put(roomToUse.getRoomNumber(), new Assignment(roomToUse, p));
+				}
 				//assign them the room
-				Assignment a = new Assignment(roomToUse, p);
+
 				// set the assignments in the hasMap
-				assignment.put(roomToUse.getRoomNumber(), a);
 				StringAssigns.put(p.name, roomToUse.getRoomNumber());
 				// don't need to worry about removing because this is
 				// essentially an iterator

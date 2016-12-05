@@ -13,7 +13,7 @@ public class Node {
 	
 	public Node(LinkedHashMap<String, Assignment> assigns){
 		this.Assignments = assigns;
-		this.score = 1000000;
+		this.score = 0;
 	}
 	public Node (Node n){
 		this.Assignments = new LinkedHashMap<String, Assignment>();
