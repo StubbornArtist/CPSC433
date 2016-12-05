@@ -3,6 +3,7 @@ package cpsc433;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Random;
@@ -107,7 +108,7 @@ public class SisyphusI {
 	protected void createOutputFile(Node n, String fileName){
 		try {
 			FileWriter writer = new FileWriter(fileName);
-			if(n.score == -1){
+			if(n == null){
 				writer.write("No solution");
 			}
 			else{
@@ -169,11 +170,13 @@ public class SisyphusI {
 				this.cancel();
 				timeout.cancel();
 			}
+			
 		};
 		timeout.schedule(killSearch, (long) (timeLimit * 0.9));
 		int GenSize = 500;
 		//create the first generation
 		Generation currentGen = createFirstGen(env, GenSize);
+		System.out.println(env.getHeads());
 		while(search){
 			//mutate generations with currentGen as input
 			currentGen.mutate( 1,1,1, env);
@@ -182,7 +185,7 @@ public class SisyphusI {
 			//cull generations of mutated nodes
 			currentGen = cullGeneration(currentGen, GenSize, (float) 0.8, (float) 0.2);
 			bestNode = currentGen.bestNode();
-			//System.out.println(currentGen);
+			System.out.println(currentGen);
 		}	
 		
 		//retrieve the best of the nodes in the current generation
@@ -196,55 +199,55 @@ public class SisyphusI {
 		for (int i = 0; i < genSize; i++) {
 			LinkedHashMap<String, Assignment> assignment = new LinkedHashMap<String, Assignment>();
 			LinkedHashMap<String, String> StringAssigns = new LinkedHashMap<String, String>();
-			Iterator<Person> people = env.getPeople().values().iterator();
-			Iterator<String> assigned = env.getAssignments().keySet().iterator();
 			LinkedHashMap<String, Room> rooms = env.getRooms();
 			ArrayList<Room> roomList = new ArrayList<Room>(rooms.values());
+			HashSet<String> heads = env.getHeads();
 			
-			while(assigned.hasNext()){
-				Person person = env.getPeople().get(assigned.next());
-				Room room = env.getRooms().get(env.getAssignments().get(person.name));
-				if(assignment.containsKey(room.getRoomNumber())){
-					assignment.get(room.getRoomNumber()).addPerson(person);
+			for(String p : env.getAssignments().values()){
+				Room r = env.getRooms().get(env.getAssignments().get(p));
+				Person person = env.getPeople().get(p);
+				if(assignment.containsKey(r.getRoomNumber())){
+					assignment.get(r.getRoomNumber()).addPerson(person);
 				}
 				else{
-					assignment.put(room.getRoomNumber(), new Assignment(room, person));
+					assignment.put(r.getRoomNumber(), new Assignment(r,person));
 				}
-				StringAssigns.put(person.name, room.getRoomNumber());
-			}
-			for(String h : env.getHeads()){
-				Person p = env.getPeople().get(h);
-				Room roomVal;
-				if(StringAssigns.containsKey(h)) continue;
-				do{
-					roomVal = roomList.get(rand.nextInt(roomList.size()));
-				}while(assignment.containsKey(roomVal.getRoomNumber()));
-
-				assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, p));
-				StringAssigns.put(p.name, roomVal.getRoomNumber());
-			}
-			// Assign each person a random room
-			while(people.hasNext()){
-				Person personVal = people.next();
-				//Is this person hard-assigned a room?
-				//If they are, the roomVal becomes the room that they are assigned to
-				//no means we assign them the random room
-				if(StringAssigns.containsKey(personVal.name)) continue;
-				Room roomVal;
-				Assignment a;
-				do{
-					roomVal = roomList.get(rand.nextInt(roomList.size()));
 				
-				}while(assignment.containsKey(roomVal.getRoomNumber()) && 
-						assignment.get(roomVal.getRoomNumber()).size() > 1);
-				// The keys are the room numbers
-				if (assignment.containsKey(roomVal.getRoomNumber())) {
-					assignment.get(roomVal.getRoomNumber()).addPerson(personVal);
-					StringAssigns.put(personVal.name, roomVal.getRoomNumber());
-				} else {
-					assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, personVal));
-					StringAssigns.put(personVal.name, roomVal.getRoomNumber());	
+				StringAssigns.put(p, r.getRoomNumber());
+			}
+			for(String p: heads){
+				Person headPersonToAdd = env.getPeople().get(p);
+				Room roomToUse;
+				int roomNumberToUse;
+				if(StringAssigns.containsKey(headPersonToAdd.name)) continue;
+				do{
+					roomNumberToUse = rand.nextInt(roomList.size());
+					roomToUse = roomList.get(roomNumberToUse);
+				}while(assignment.containsKey(roomToUse.getRoomNumber()));
+				
+				Assignment a = new Assignment(roomToUse, headPersonToAdd);
+				assignment.put(roomToUse.getRoomNumber(), a);
+				roomList.remove(roomNumberToUse);
+				StringAssigns.put(p, roomToUse.getRoomNumber());
+			}
+			
+			for(Person p: env.getPeople().values()){
+				if(StringAssigns.containsKey(p.name)){
+					continue;
 				}
+				int roomNumberToUse = rand.nextInt(roomList.size());
+				Room roomToUse = roomList.get(roomNumberToUse);
+				
+				//Find a room that has less than two people in it
+				while(assignment.containsKey(roomToUse.getRoomNumber())){
+					if(assignment.get(roomToUse.getRoomNumber()).getPeople().size() >= 2){
+						roomNumberToUse = rand.nextInt(roomList.size());
+						roomToUse = roomList.get(roomNumberToUse);
+					}
+				}
+				Assignment a = new Assignment(roomToUse, p);
+				assignment.put(roomToUse.getRoomNumber(), a);
+				StringAssigns.put(p.name, roomToUse.getRoomNumber());
 			}
 			genOne.addFact(assignment,StringAssigns);
 		}
@@ -252,7 +255,6 @@ public class SisyphusI {
 	}
 
 	public Generation cullGeneration(Generation gen, int desiredSize, float bestPercentage, float worstPercentage){
-		Random rand = new Random();
 		Generation newGen = new Generation(gen.genNumber);
 		
 		// The proportion of nodes to grab from both the best nodes and
@@ -275,49 +277,7 @@ public class SisyphusI {
 		for(int i = 0; i < counter2; i++){
 			newGen.addFact(worstNodes[i]);
 		}
-		/*
-		// Remove all nodes from the new generation that have a score of 0
-		for(Node n : newGen.facts){
-			if (n.score < 0){
-				newGen.removeFact(n);
-			}
-		}
 		
-		// Pad the new generation with new nodes if we have yet to hit the desired size
-		for (int i = newGen.size(); i < desiredSize; i++) {
-			LinkedHashMap<String, Assignment> assignment = new LinkedHashMap<String, Assignment>();
-			LinkedHashMap<String, String> StringAssigns = new LinkedHashMap<String, String>();
-			Iterator<Person> people = env.getPeople().values().iterator();
-			LinkedHashMap<String, Room> rooms = env.getRooms();
-			ArrayList<Room> roomList = new ArrayList<Room>(rooms.values());
-
-			// Assign each person a random room
-			while(people.hasNext()){
-				Person personVal = people.next();
-				Room roomVal;
-				//Is this person hard-assigned a room?
-				//If they are, the roomVal becomes the room that they are assigned to
-				//no means we assign them the random room	
-				if (env.assignments.containsKey(personVal)){
-					roomVal = rooms.get(env.assignments.get(personVal));
-				}else{
-					do{
-						roomVal = roomList.get(rand.nextInt(roomList.size()));
-					}while(assignment.containsKey(roomVal.getRoomNumber()) 
-							&& assignment.get(roomVal.getRoomNumber()).size()== 2);
-				}	
-				// The keys are the room numbers
-				if (assignment.containsKey(roomVal.getRoomNumber())) {
-					assignment.get(roomVal.getRoomNumber()).addPerson(personVal);
-					StringAssigns.put(personVal.name, roomVal.getRoomNumber());
-				} else {
-					assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, personVal));
-					StringAssigns.put(personVal.name, roomVal.getRoomNumber());	
-				}
-			}
-			newGen.addFact(assignment,StringAssigns);
-		}
-		*/
 		return newGen;
 	}
 		
