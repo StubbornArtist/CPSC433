@@ -29,6 +29,10 @@ public class Generation {
 		this.facts.remove(n);
 	}
 	
+	public void addFact(HashSet<Node> set){
+		this.facts = set;
+	}
+	
 	public Node factAt(int index){
 		Iterator<Node> nodes = facts.iterator();
 		int count = 0;
