@@ -3,6 +3,7 @@ package cpsc433;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Random;
@@ -198,58 +199,38 @@ public class SisyphusI {
 		for (int i = 0; i < genSize; i++) {
 			LinkedHashMap<String, Assignment> assignment = new LinkedHashMap<String, Assignment>();
 			LinkedHashMap<String, String> StringAssigns = new LinkedHashMap<String, String>();
-			Iterator<Person> people = env.getPeople().values().iterator();
-			Iterator<String> assigned = env.getAssignments().keySet().iterator();
 			LinkedHashMap<String, Room> rooms = env.getRooms();
 			ArrayList<Room> roomList = new ArrayList<Room>(rooms.values());
+			HashSet<String> heads = env.getHeads();
 			
-			while(assigned.hasNext()){
-				Person person = env.getPeople().get(assigned.next());
-				Room room = env.getRooms().get(env.getAssignments().get(person.name));
-				if(assignment.containsKey(room.getRoomNumber())){
-					assignment.get(room.getRoomNumber()).addPerson(person);
+			for(String p: heads){
+				Person headPersonToAdd = env.getPeople().get(p);
+				int roomNumberToUse = rand.nextInt(roomList.size());
+				Room roomToUse = roomList.get(roomNumberToUse);
+				Assignment a = new Assignment(roomToUse, headPersonToAdd);
+				assignment.put(roomToUse.getRoomNumber(), a);
+				roomList.remove(roomNumberToUse);
+				StringAssigns.put(p, roomToUse.getRoomNumber());
+			}
+			
+			for(Person p: env.getPeople().values()){
+				if(heads.contains(p.name)){
+					continue;
 				}
-				else{
-					assignment.put(room.getRoomNumber(), new Assignment(room, person));
+				int roomNumberToUse = rand.nextInt(roomList.size());
+				Room roomToUse = roomList.get(roomNumberToUse);
+				
+				//Find a room that has less than two people in it
+				while(assignment.containsKey(roomToUse.getRoomNumber())){
+					if(assignment.get(roomToUse.getRoomNumber()).getPeople().size() >= 2){
+						roomNumberToUse = rand.nextInt(roomList.size());
+						roomToUse = roomList.get(roomNumberToUse);
+					}
 				}
-				StringAssigns.put(person.name, room.getRoomNumber());
-			}/*
-			for(String h : env.getHeads()){
-				Person p = env.getPeople().get(h);
-				Room roomVal;
-				do{
-					roomVal = roomList.get(rand.nextInt(roomList.size()));
-					
-				}while(assignment.containsKey(roomVal.getRoomNumber()) &&
-						(assignment.get(roomVal.getRoomNumber()).size() > 0));
-				if(assignment.containsKey(roomVal.getRoomNumber())){
-					assignment.get(roomVal.getRoomNumber()).addPerson(p);
-				}
-				else{
-					assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, p));
-				}
-				StringAssigns.put(p.name, roomVal.getRoomNumber());
-			}*/
-			// Assign each person a random room
-			while(people.hasNext()){
-				Person personVal = people.next();
-				//Is this person hard-assigned a room?
-				//If they are, the roomVal becomes the room that they are assigned to
-				//no means we assign them the random room
-				if(env.getAssignments().containsKey(personVal.name)) continue;
-				Room roomVal;
-				do{
-					roomVal = roomList.get(rand.nextInt(roomList.size()));
-				}while(assignment.containsKey(roomVal.getRoomNumber()) && 
-						assignment.get(roomVal.getRoomNumber()).size() > 1);
-				// The keys are the room numbers
-				if (assignment.containsKey(roomVal.getRoomNumber())) {
-					assignment.get(roomVal.getRoomNumber()).addPerson(personVal);
-					StringAssigns.put(personVal.name, roomVal.getRoomNumber());
-				} else {
-					assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, personVal));
-					StringAssigns.put(personVal.name, roomVal.getRoomNumber());	
-				}
+				
+				Assignment a = new Assignment(roomToUse, p);
+				assignment.put(roomToUse.getRoomNumber(), a);
+				StringAssigns.put(p.name, roomToUse.getRoomNumber());
 			}
 			genOne.addFact(assignment,StringAssigns);
 		}
@@ -295,7 +276,6 @@ public class SisyphusI {
 			Iterator<Person> people = env.getPeople().values().iterator();
 			LinkedHashMap<String, Room> rooms = env.getRooms();
 			ArrayList<Room> roomList = new ArrayList<Room>(rooms.values());
-
 			// Assign each person a random room
 			while(people.hasNext()){
 				Person personVal = people.next();
