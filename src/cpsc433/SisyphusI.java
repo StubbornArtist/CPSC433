@@ -201,8 +201,16 @@ public class SisyphusI {
 			LinkedHashMap<String, String> StringAssigns = new LinkedHashMap<String, String>();
 			LinkedHashMap<String, Room> rooms = env.getRooms();
 			ArrayList<Room> roomList = new ArrayList<Room>(rooms.values());
-			HashSet<String> heads = env.getHeads();
-			HashSet<Person> pepes = (HashSet<Person>) env.getPeople().values();
+			HashSet<String> heads = new HashSet<String>();
+			HashSet<Person> pepes = new HashSet<Person>();
+			
+			for(Person p: env.getPeople().values()){
+				pepes.add(p);
+			}
+			for(String head: env.getHeads()){
+				heads.add(head);
+			}
+			
 
 			// Assign our hard assignments
 			for (String person : env.getAssignments().keySet()) {
