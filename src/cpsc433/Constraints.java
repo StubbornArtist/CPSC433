@@ -999,19 +999,19 @@ public class Constraints {
 	public int eval(Node n, Environment e) {
 		int score = 1000;
 		if (!hardConstraint1(n.StringAssignments, e)) {
-			System.out.println("person is not assigned");
+			//System.out.println("person is not assigned");
 			return -1;
 		}
 		if (!hardConstraint2(n.Assignments, e)) {
-			System.out.println("person is assigned two rooms");
+			//System.out.println("person is assigned two rooms");
 			return -1;
 		}
 		if (!hardConstraint3(n.Assignments, e)) {
-			System.out.println("more than two in a room");
+			//System.out.println("more than two in a room");
 			return -1;
 		}
 		if (!hardConstraint4(n.Assignments, e)) {
-			System.out.println("head doesn't have their own room");
+			//System.out.println("head doesn't have their own room");
 			return -1;
 		}
 		score += softConstraintConglomerate23(n.StringAssignments, e);
