@@ -192,12 +192,6 @@ public class SisyphusI {
 		return bestNode;
 	}
 
-	private boolean containsHead(Environment e, Assignment a){
-		for(String h : e.getHeads()){
-			if(a.contains(env.getPeople().get(h))) return true;	
-		}
-		return false;
-	}
 	private Generation createFirstGen(Environment env, int genSize) {
 		Random rand = new Random();
 		Generation genOne = new Generation(0);
@@ -207,8 +201,16 @@ public class SisyphusI {
 			LinkedHashMap<String, String> StringAssigns = new LinkedHashMap<String, String>();
 			LinkedHashMap<String, Room> rooms = env.getRooms();
 			ArrayList<Room> roomList = new ArrayList<Room>(rooms.values());
-			HashSet<String> heads = env.getHeads();
-			//HashSet<Person> pepes = (HashSet<Person>) env.getPeople().values();
+			HashSet<String> heads = new HashSet<String>();
+			HashSet<Person> pepes = new HashSet<Person>();
+			
+			for(Person p: env.getPeople().values()){
+				pepes.add(p);
+			}
+			for(String head: env.getHeads()){
+				heads.add(head);
+			}
+			
 
 			// Assign our hard assignments
 			for (String person : env.getAssignments().keySet()) {
@@ -217,13 +219,17 @@ public class SisyphusI {
 				// grab the room
 				Room r = env.getRooms().get(env.getAssignments().get(p));
 				// create the assignments
-				if(assignment.containsKey(r.getRoomNumber())){
-					assignment.get(r.getRoomNumber()).addPerson(p);
+				Assignment a = new Assignment(r, p);
+				assignment.put(r.getRoomNumber(), a);
+				StringAssigns.put(r.getRoomNumber(), p.name);
+				// if they are a head, remove them from the head list, as well
+				// as remove the room from the room list
+				if (heads.contains(p.name)) {
+					heads.remove(p.name);
+					roomList.remove(r);
 				}
-				else{
-					assignment.put(r.getRoomNumber(), new Assignment(r,p));
-				}
-				StringAssigns.put(p.name, r.getRoomNumber());
+				// remove everyone assigned, from the people list
+				pepes.remove(p);
 			}
 
 			// Assign the heads
@@ -231,7 +237,6 @@ public class SisyphusI {
 				// grab the person
 				Person headPersonToAdd = env.getPeople().get(p);
 				// pick a random room
-				if(StringAssigns.containsKey(p)) continue;
 				int roomNumberToUse = rand.nextInt(roomList.size());
 				Room roomToUse = roomList.get(roomNumberToUse);
 				// if the room has an assignment we cant use it because ehads
@@ -244,29 +249,36 @@ public class SisyphusI {
 				Assignment a = new Assignment(roomToUse, headPersonToAdd);
 				assignment.put(roomToUse.getRoomNumber(), a);
 				StringAssigns.put(p, roomToUse.getRoomNumber());
+				// remove the room from the room list because we shouldnt put
+				// anyone else here
+				roomList.remove(roomNumberToUse);
+				// remove the head from the person list because we are no longer
+				// worried about them
+				pepes.remove(env.getPeople().get(p));
 			}
 
 			// Assign everyone else
-			for (Person p : env.getPeople().values()) {
-				if(StringAssigns.containsKey(p.name))continue;
+			for (Person p : pepes) {
+
 				// pick a random room
 				int roomNumberToUse = rand.nextInt(roomList.size());
 				Room roomToUse = roomList.get(roomNumberToUse);
 
 				// Find a room that has less than two people in it
-				while (assignment.containsKey(roomToUse.getRoomNumber()) 
-						&& assignment.get(roomToUse.getRoomNumber()).size() > 1
-						&& containsHead(env, assignment.get(roomToUse.getRoomNumber()))) {
+				while (assignment.containsKey(roomToUse.getRoomNumber()) && assignment.get(roomToUse).size() > 2) {
 					roomNumberToUse = rand.nextInt(roomList.size());
 					roomToUse = roomList.get(roomNumberToUse);
 				}
-				if(assignment.containsKey(roomToUse.getRoomNumber())){
-					assignment.get(roomToUse.getRoomNumber()).addPerson(p);
-				}
-				else{
-					assignment.put(roomToUse.getRoomNumber(), new Assignment(roomToUse,p));
-				}
+				
+				//assign them the room
+				Assignment a = new Assignment(roomToUse, p);
+				
+				
+				// set the assignments in the hasMap
+				assignment.put(roomToUse.getRoomNumber(), a);
 				StringAssigns.put(p.name, roomToUse.getRoomNumber());
+				// don't need to worry about removing because this is
+				// essentially an iterator
 			}
 			genOne.addFact(assignment, StringAssigns);
 		}
