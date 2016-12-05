@@ -107,7 +107,7 @@ public class SisyphusI {
 	protected void createOutputFile(Node n, String fileName){
 		try {
 			FileWriter writer = new FileWriter(fileName);
-			if(n == null){
+			if(n.score == -1){
 				writer.write("No solution");
 			}
 			else{
@@ -169,13 +169,11 @@ public class SisyphusI {
 				this.cancel();
 				timeout.cancel();
 			}
-			
 		};
 		timeout.schedule(killSearch, (long) (timeLimit * 0.9));
 		int GenSize = 500;
 		//create the first generation
 		Generation currentGen = createFirstGen(env, GenSize);
-		System.out.println(env.getHeads());
 		while(search){
 			//mutate generations with currentGen as input
 			currentGen.mutate( 1,1,1, env);
@@ -213,33 +211,30 @@ public class SisyphusI {
 					assignment.put(room.getRoomNumber(), new Assignment(room, person));
 				}
 				StringAssigns.put(person.name, room.getRoomNumber());
-			}/*
+			}
 			for(String h : env.getHeads()){
 				Person p = env.getPeople().get(h);
 				Room roomVal;
+				if(StringAssigns.containsKey(h)) continue;
 				do{
 					roomVal = roomList.get(rand.nextInt(roomList.size()));
-					
-				}while(assignment.containsKey(roomVal.getRoomNumber()) &&
-						(assignment.get(roomVal.getRoomNumber()).size() > 0));
-				if(assignment.containsKey(roomVal.getRoomNumber())){
-					assignment.get(roomVal.getRoomNumber()).addPerson(p);
-				}
-				else{
-					assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, p));
-				}
+				}while(assignment.containsKey(roomVal.getRoomNumber()));
+
+				assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, p));
 				StringAssigns.put(p.name, roomVal.getRoomNumber());
-			}*/
+			}
 			// Assign each person a random room
 			while(people.hasNext()){
 				Person personVal = people.next();
 				//Is this person hard-assigned a room?
 				//If they are, the roomVal becomes the room that they are assigned to
 				//no means we assign them the random room
-				if(env.getAssignments().containsKey(personVal.name)) continue;
+				if(StringAssigns.containsKey(personVal.name)) continue;
 				Room roomVal;
+				Assignment a;
 				do{
 					roomVal = roomList.get(rand.nextInt(roomList.size()));
+				
 				}while(assignment.containsKey(roomVal.getRoomNumber()) && 
 						assignment.get(roomVal.getRoomNumber()).size() > 1);
 				// The keys are the room numbers
