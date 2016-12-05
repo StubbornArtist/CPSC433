@@ -974,9 +974,9 @@ public class Constraints {
 		if (!hardConstraint4(n.Assignments, e)) {
 			return Integer.MIN_VALUE;
 		}
-		//if(!hardConstraint5(n.StringAssignments,e)){
-			//return Integer.MIN_VALUE;
-		//}
+		if(!hardConstraint5(n.StringAssignments,e)){
+			return Integer.MIN_VALUE;
+		}
 		score += softConstraint1(n.StringAssignments, e);
 		score += softConstraint2(n.StringAssignments, e);
 		score += softConstraint3(n.StringAssignments, e);

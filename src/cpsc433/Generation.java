@@ -88,19 +88,13 @@ public class Generation {
 	}
 
 	public Node bestNode(){
-		//Iterator<Node> nodes = facts.iterator();
-		Node maxNode = null;
-				//nodes.next();
-		int maxScore = Integer.MIN_VALUE; 
-				//maxNode.score;
-		for(Node n : facts){
-		//while(nodes.hasNext()){
-			//Node n = nodes.next();
-			if(n.score > maxScore){
-				maxScore = n.score;
+		Iterator<Node> nodes = facts.iterator();
+		Node maxNode = nodes.next(); 
+		while(nodes.hasNext()){
+			Node n = nodes.next();
+			if(n.score > maxNode.score){
 				maxNode = n;
-			}
-			//}	
+			}	
 		}
 		return maxNode;
 	}
@@ -171,6 +165,18 @@ public class Generation {
 		}
 		gen+="}";
 		return gen;
+	}
+	
+	public String altToString(){
+		Iterator<Node> nodes = facts.iterator();
+		String gen = "Generation " + genNumber + "\n{";
+		while(nodes.hasNext()){
+			gen += nodes.next().altToString();
+			if(nodes.hasNext()) gen+=",\n";
+		}
+		gen+="}";
+		return gen;
+		
 	}
 			
 }

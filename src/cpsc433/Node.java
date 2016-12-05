@@ -18,7 +18,7 @@ public class Node {
 	public Node (Node n){
 		this.Assignments = new LinkedHashMap<String, Assignment>();
 		this.StringAssignments = new LinkedHashMap<String,String>();
-		
+		this.score = n.score;
 		Iterator<String> assigns = n.Assignments.keySet().iterator();
 		while(assigns.hasNext()){
 			String room = assigns.next();
