@@ -139,6 +139,7 @@ public class SisyphusI {
 				bestNode = doSearch(env, timeLimit);
 				createOutputFile(bestNode, fileName);
 				System.out.println(bestNode);
+				System.out.println(bestNode.score);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
@@ -147,7 +148,6 @@ public class SisyphusI {
 			printSynopsis();
 			System.exit(-1);
 		}
-		printResults();
 	}
 
 	/**
@@ -159,6 +159,7 @@ public class SisyphusI {
 	 *            A time limit in milliseconds.
 	 */
 	protected Node doSearch(Environment env, long timeLimit) {
+		Node bestNode = null;
 		//timer to stop the creation of new generations once time is up
 		final Timer timeout = new Timer(false);
 		TimerTask killSearch = new TimerTask(){
@@ -171,21 +172,23 @@ public class SisyphusI {
 			
 		};
 		timeout.schedule(killSearch, (long) (timeLimit * 0.9));
-		int GenSize = 10;
+		int GenSize = 500;
 		//create the first generation
 		Generation currentGen = createFirstGen(env, GenSize);
+		System.out.println(env.getHeads());
 		while(search){
 			//mutate generations with currentGen as input
-			currentGen.mutate(1,1,1, env);
+			currentGen.mutate( 1,1,1, env);
 			//evaluate each of the nodes in the generation
 			currentGen.evaluate(env, con);
 			//cull generations of mutated nodes
-			currentGen = cullGeneration(currentGen, 10, (float) 0.8, (float) 0.2);
-			System.out.println(currentGen);
+			currentGen = cullGeneration(currentGen, GenSize, (float) 0.8, (float) 0.2);
+			bestNode = currentGen.bestNode();
+			//System.out.println(currentGen);
 		}	
 		
 		//retrieve the best of the nodes in the current generation
-		return currentGen.bestNode();
+		return bestNode;
 	}
 	
 	private Generation createFirstGen(Environment env, int genSize) {
@@ -210,7 +213,23 @@ public class SisyphusI {
 					assignment.put(room.getRoomNumber(), new Assignment(room, person));
 				}
 				StringAssigns.put(person.name, room.getRoomNumber());
-			}
+			}/*
+			for(String h : env.getHeads()){
+				Person p = env.getPeople().get(h);
+				Room roomVal;
+				do{
+					roomVal = roomList.get(rand.nextInt(roomList.size()));
+					
+				}while(assignment.containsKey(roomVal.getRoomNumber()) &&
+						(assignment.get(roomVal.getRoomNumber()).size() > 0));
+				if(assignment.containsKey(roomVal.getRoomNumber())){
+					assignment.get(roomVal.getRoomNumber()).addPerson(p);
+				}
+				else{
+					assignment.put(roomVal.getRoomNumber(), new Assignment(roomVal, p));
+				}
+				StringAssigns.put(p.name, roomVal.getRoomNumber());
+			}*/
 			// Assign each person a random room
 			while(people.hasNext()){
 				Person personVal = people.next();
@@ -238,6 +257,7 @@ public class SisyphusI {
 	}
 
 	public Generation cullGeneration(Generation gen, int desiredSize, float bestPercentage, float worstPercentage){
+		Random rand = new Random();
 		Generation newGen = new Generation(gen.genNumber);
 		
 		// The proportion of nodes to grab from both the best nodes and
@@ -257,15 +277,14 @@ public class SisyphusI {
 		for(int i = 0; i < counter ; i++){
 			newGen.addFact(bestNodes[i]);
 		}
-		
 		for(int i = 0; i < counter2; i++){
 			newGen.addFact(worstNodes[i]);
 		}
-		
+		/*
 		// Remove all nodes from the new generation that have a score of 0
 		for(Node n : newGen.facts){
 			if (n.score < 0){
-				newGen.facts.remove(n);
+				newGen.removeFact(n);
 			}
 		}
 		
@@ -303,14 +322,10 @@ public class SisyphusI {
 			}
 			newGen.addFact(assignment,StringAssigns);
 		}
-		
+		*/
 		return newGen;
 	}
 		
-	protected void printResults() {
-		System.out.println("Would print results here, but the search isn't implemented yet.");
-	}
-
 	protected void runInteractiveMode() {
 		final int maxBuf = 200;
 		byte[] buf = new byte[maxBuf];

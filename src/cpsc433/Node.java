@@ -9,8 +9,6 @@ public class Node {
 	
 	public LinkedHashMap<String, String> StringAssignments;
 	public LinkedHashMap<String, Assignment> Assignments;
-	private LinkedHashMap<Integer, String> roomKeys;
-	private LinkedHashMap<String, Integer> keyIndices;
 	public int score;
 	
 	public Node(LinkedHashMap<String, Assignment> assigns){
@@ -109,11 +107,12 @@ public class Node {
 		Room room2;
 		Person person;
 		Assignment a;
+		Assignment b;
 
 		room = roomAt(rand.nextInt(numRooms()));
 		a = Assignments.get(room.getRoomNumber());
-		
 		room2 = roomAt(rand.nextInt(numRooms()));
+		
 		person = Assignments.get(room.getRoomNumber()).randomPerson();
 		
 		newNode.remove(person, room);
@@ -145,7 +144,7 @@ public class Node {
 	@Override
 	public String toString(){
 		Iterator<Assignment> it = Assignments.values().iterator();
-		String node = "";
+		String node = this.score + "\n";
 		while(it.hasNext()){
 			node += it.next().toString();
 			if(it.hasNext()) node+=",";

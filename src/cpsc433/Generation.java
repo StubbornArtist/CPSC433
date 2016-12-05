@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Random;
 
+
 public class Generation {
 	
 	public int genNumber;
@@ -23,6 +24,9 @@ public class Generation {
 
 	public void addFact(Node n){
 		this.facts.add(n);
+	}
+	public void removeFact(Node n){
+		this.facts.remove(n);
 	}
 	
 	public Node factAt(int index){
@@ -68,11 +72,10 @@ public class Generation {
 		Person p;
 		Assignment a1;
 		Room room;
-
 		a1 = n1.peopleAt(rand.nextInt(n1.numRooms()));
 		p = a1.randomPerson();
-		room = n2.getRoom(p);	
-	
+		room = n2.getRoom(p);
+		
 		n1.remove(p, a1.getRoom());
 		n1.put(p, room);
 		
@@ -87,7 +90,7 @@ public class Generation {
 		
 		while(nodes.hasNext()){
 			Node n = nodes.next();
-			if(n.score > maxScore && !(n.score == -1)){
+			if(n.score > maxScore){
 				maxScore = n.score;
 				maxNode = n;
 			}	
@@ -99,7 +102,7 @@ public class Generation {
 		Iterator<Node> nodes = facts.iterator();
 		while(nodes.hasNext()){
 			Node n = nodes.next();
-			n.setScore(c.eval(n, e));	
+			n.setScore(c.eval(n, e));
 		}
 	}
 		

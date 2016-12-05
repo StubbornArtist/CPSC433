@@ -1,8 +1,12 @@
 package cpsc433;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
+
 import cpsc433.Predicate.ParamType;
+
 import java.io.*;
 
 /**
@@ -36,6 +40,8 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	public LinkedHashMap<String, String> assignments;
 	private LinkedHashMap<String, Group> groups;
 	public LinkedHashMap<String, Project> projects;
+	private HashSet<String> heads;
+	
 
 	public LinkedHashMap<String, Person> getPeople(){
 		return this.people;
@@ -55,6 +61,9 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 	public LinkedHashMap<String, String> getAssignments(){
 		return this.assignments;
 	}
+	public HashSet<String> getHeads(){
+		return this.heads;
+	}
 	
 	protected Environment(String name) {
 		super(name == null ? "theEnvironment" : name);
@@ -63,6 +72,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 		assignments = new LinkedHashMap<String, String>();
 		groups = new LinkedHashMap<String, Group>();
 		projects = new LinkedHashMap<String, Project>();
+		heads = new HashSet<String>();
 	}
 
 	/**
@@ -143,6 +153,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 		if (!e_manager(p)) { // Check if the person 'p' has the role "manager".
 								// If not, give him the role "manager".
 			people.get(p).addRole("manager");
+			heads.add(p);
 		}
 	}
 
@@ -216,6 +227,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 
 		a_group(p, grp);
 		groups.get(grp).addHead(p);
+		heads.add(p);
 	}
 
 	@Override
@@ -229,6 +241,7 @@ public class Environment extends PredicateReader implements SisyphusPredicates {
 
 		a_project(p, prj);
 		projects.get(prj).addHead(p);
+		heads.add(p);
 	}
 
 	@Override
