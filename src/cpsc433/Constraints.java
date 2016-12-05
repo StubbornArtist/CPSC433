@@ -121,6 +121,15 @@ public class Constraints {
 		}
 		return true;
 	}
+	
+	public boolean hardConstraint5(LinkedHashMap<String, String> a, Environment e){
+		for(String p: e.getAssignments().keySet()){
+			if(!a.get(p).equals(e.getAssignments().get(p))){
+				return false;
+			}
+		}
+		return true;
+	}
 
 	// All heads of groups should have a large office
 	// penalty of -40
@@ -502,9 +511,8 @@ public class Constraints {
 							score -= 50;
 						}
 					}
+					checked.add(per);
 				}
-				// add this person so we know that we checked them
-				checked.add(per);
 			}
 		}
 		return score;
@@ -876,50 +884,6 @@ public class Constraints {
 		return score;
 	}
 	
-	public boolean checkTwoToARoom(Assignment a) {
-		if (a.getPeople().size() > 1) {
-			return false;
-		}
-		return true;
-	}
-
-	public boolean checkManager(Assignment a, Environment env) {
-		Iterator<Person> it = null;
-		Person person = null;
-		HashSet<Person> people = a.getPeople();
-
-		// because we check this, by default if one of them is a manager, we
-		// KNOW it's going to fail
-		if (people.size() > 1) {
-			it = people.iterator();
-			while (it.hasNext()) {
-				person = (Person) it.next();
-				// Check if the current person is a manager
-				if (env.e_manager(person.name)) {
-					return false;
-				}
-
-				// Check if this person is a group head
-				for (Map.Entry<String, Group> group : env.getGroups().entrySet()) {
-					Group g = group.getValue();
-					if (env.e_heads_group(person.name, g.getName())) {
-						return false;
-					}
-				}
-
-				// Check if this person is a project head
-				for (Map.Entry<String, Project> project : env.projects.entrySet()) {
-					Project p = project.getValue();
-					if (env.e_heads_project(person.name, p.getName())) {
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
-
-
 	/**
 	 * Handles soft constraints 5,6,7 because all of these can be handled
 	 * within an individual room. Rather than looping through each node every
@@ -999,19 +963,18 @@ public class Constraints {
 	public int eval(Node n, Environment e) {
 		int score = 0;
 		if (!hardConstraint1(n.StringAssignments, e)) {
-			//System.out.println("person is not assigned");
 			return Integer.MIN_VALUE;
 		}
 		if (!hardConstraint2(n.Assignments, e)) {
-			//System.out.println("person is assigned two rooms");
 			return Integer.MIN_VALUE;
 		}
 		if (!hardConstraint3(n.Assignments, e)) {
-			//System.out.println("more than two in a room");
 			return Integer.MIN_VALUE;
 		}
 		if (!hardConstraint4(n.Assignments, e)) {
-			//System.out.println("head doesn't have their own room");
+			return Integer.MIN_VALUE;
+		}
+		if(!hardConstraint5(n.StringAssignments,e)){
 			return Integer.MIN_VALUE;
 		}
 		score += softConstraint1(n.StringAssignments, e);
@@ -1030,22 +993,6 @@ public class Constraints {
 		score += softConstraint14(n.Assignments, e);
 		score += softConstraint15(n.Assignments, e);
 		score += softConstraint16(n.Assignments, e);
-		/*
-		score += softConstraintConglomerate23(n.StringAssignments, e);
-		//System.out.println("Soft Constraint 2, 3 penalty: " + score);
-		score += softConstraintConglomerate567(n.StringAssignments, e);
-		//System.out.println("Soft Constraint 5, 6, 7 penalty: " + score);
-		score += softConstraintConglomerate8910(n.StringAssignments, e);
-		//System.out.println("Soft Constraint 8, 9, 10 penalty: " + score);
-		score += softConstraint12(n.Assignments, e);
-		//System.out.println("Soft Constraint 12 penalty: " + score);
-		score += softConstraint14(n.Assignments, e);
-		//System.out.println("Soft Constraint 14 penalty: " + score);
-		score += softConstraint15(n.Assignments, e);
-		//System.out.println("Soft Constraint 15 penalty: " + score);
-		score += softConstraintConglomerate14111316(n.Assignments, e);
-		//System.out.println("Soft Constraints 1, 4, 11, 13, 16 penalty: " + score);
-		 */
 
 		return score;
 	}
