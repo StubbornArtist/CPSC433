@@ -17,6 +17,15 @@ public class Constraints {
 		}
 		return instance;
 	}
+	/**
+	 * Checks that all people from the environment have been assigned a room.
+	 * @param a
+	 * 			A hash map representing room assignments with person, room pairs
+	 * @param e
+	 * 			An instance of the environment
+	 * @return
+	 * 			Whether the hard constraint has been broken (false) or not (true)
+	 */
 
 	public boolean hardConstraint1(LinkedHashMap<String, String> a, Environment e) {
 		Iterator<String> people = e.getPeople().keySet().iterator();
@@ -61,8 +70,19 @@ public class Constraints {
 		return true;
 	}
 
+	/**
+	 * Checks that no room contains more than two people.
+	 * @param a
+	 * 			A hash map of room assignments in room, list of people pairs
+	 * @param e
+	 * 			An instance of the environment
+	 * @return
+	 * 			Whether the constraint was broken (false) or not (true)
+	 */
 	public boolean hardConstraint3(LinkedHashMap<String, Assignment> a, Environment e) {
+		//loop through each room that is assigned
 		for (Assignment assn : a.values()) {
+			//check whether the room contains more then two people
 			if (assn.getPeople().size() > 2) {
 				return false;
 			}
@@ -71,8 +91,15 @@ public class Constraints {
 
 	}
 
-	// Project heads, Group Heads, and Managers can't share a room with anyone
-	// else
+	/**
+	 * Check that every manager, group head, and project head has their own room.
+	 * @param a
+	 * 			A hash map of room assignments in room, list of person pairs
+	 * @param e
+	 * 			An instance of the environment 
+	 * @return
+	 * 			Whether the constraint was broken (false) or not (true)
+	 */
 	public boolean hardConstraint4(LinkedHashMap<String, Assignment> a, Environment e) {
 
 		Assignment assign;
@@ -139,8 +166,16 @@ public class Constraints {
 		return true;
 	}
 
-	// All heads of groups should have a large office
-	// penalty of -40
+	/**
+	 * Check whether all group heads are  in large rooms. A penalty of -40 is given every 
+	 * time the constraint is broken.
+	 * @param a
+	 * 			A list of room assignments in person, room pairs
+	 * @param e
+	 * 			An instance of the environment
+	 * @return
+	 * 			The score that the particular fact received for this constraint
+	 */
 	public int softConstraint1(LinkedHashMap<String, String> a, Environment e) {
 		int score = 0;
 		Iterator<String> heads;
@@ -157,8 +192,15 @@ public class Constraints {
 		return score;
 	}
 
-	// All heads of groups should be close to all members of their group
-	// penalty of -2
+	/**
+	 * Check that group heads are close to all members of their group
+	 * @param a
+	 * 			A list of room assignments in person, room pairs
+	 * @param e
+	 * 			An instance of the environment
+	 * @return
+	 * 			The score that the fact received for this constraint
+	 */
 	public int softConstraint2(LinkedHashMap<String, String> a, Environment e) {
 		int score = 0;
 		boolean isClose = false;
@@ -167,17 +209,28 @@ public class Constraints {
 		LinkedHashMap<String, Group> groups = e.getGroups();
 		Iterator<String> groupsIt = groups.keySet().iterator();
 
+		//go through each group
 		while (groupsIt.hasNext()) {
+			//current group
 			Group g = groups.get(groupsIt.next());
+			//list of heads for this group
 			heads = g.getHeadIterator();
+			//go through each head in this group
 			while (heads.hasNext()) {
+				//current head
 				String head = heads.next();
+				//each member of the group
 				members = g.membersIterator();
 				while (members.hasNext()) {
+					//current member of the group
 					String mem = members.next();
+					//check that this member is close to the current head
 					if (e.e_close(a.get(head), a.get(mem))) {
 						isClose = true;
 					}
+					//if the current member is not the head them self and they are not close
+					//to the head then penalize 
+					//otherwise do not penalize
 					if (!isClose && !mem.equals(head))
 						score -= 2;
 					else
@@ -187,6 +240,15 @@ public class Constraints {
 		}
 		return score;
 	}
+	/**
+	 * Check that each group head is close to at least one secretary in their group.
+	 * @param a
+	 * 			A hash map of room assignments in person, room pairs
+	 * @param e
+	 * 			An instance of the environment
+	 * @return
+	 * 			The score the fact received for this constraint
+	 */
 
 	public int softConstraint3(LinkedHashMap<String, String> a, Environment e) {
 		Iterator<String> heads;
@@ -196,21 +258,32 @@ public class Constraints {
 		int score = 0;
 		LinkedHashMap<String, Group> groups = e.getGroups();
 		Iterator<String> groupsIt = groups.keySet().iterator();
-
+		//go through each group
 		while (groupsIt.hasNext()) {
+			//current group
 			Group g = groups.get(groupsIt.next());
+			//go through each head
 			heads = g.getHeadIterator();
 			while (heads.hasNext()) {
+				//current head
 				String head = heads.next();
+				//go through each member of the current group
 				members = g.membersIterator();
 				while (members.hasNext()) {
+					//current member
 					String mem = members.next();
+					//check if the current member is a secretary
 					if (e.e_secretary(mem)) {
+						//indicate that we found another secretary
 						numSec++;
+						//if this secretary is close to the head
+						//then the head is close to at least one secretary in the group
 						if (e.e_close(a.get(head), a.get(mem)))
 							closeToOne = true;
 					}
 				}
+				//if the current head is not close to any secretaries 
+				//and the group actually contains secretaries then penalize
 				if (!closeToOne && numSec > 0)
 					score += -30;
 				closeToOne = false;
@@ -219,7 +292,12 @@ public class Constraints {
 		}
 		return score;
 	}
-
+	/**
+	 * 
+	 * @param a
+	 * @param e
+	 * @return
+	 */
 	public int softConstraint4(LinkedHashMap<String, String> a, Environment e) {
 		Iterator<String> people = a.keySet().iterator();
 		Iterator<String> coworkers;
