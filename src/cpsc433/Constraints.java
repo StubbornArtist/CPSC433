@@ -121,7 +121,15 @@ public class Constraints {
 		}
 		return true;
 	}
-	
+	/**
+	 * Check that all people assigned initially remain assigned 
+	 * @param a
+	 * 			hashmap with person room pairs reprsenting room assignments
+	 * @param e
+	 * 			an instance of the environment
+	 * @return
+	 * 			whether it passes (true) or fails (false)
+	 */
 	public boolean hardConstraint5(LinkedHashMap<String, String> a, Environment e){
 		for(String p: e.getAssignments().keySet()){
 			if(!a.get(p).equals(e.getAssignments().get(p))){
@@ -959,8 +967,17 @@ public class Constraints {
 		return score;
 
 	}
-	
+	/**
+	 * Evaluate a node with all constraints
+	 * @param n
+	 * 			the node to evaluate
+	 * @param e
+	 * 			an instance of the environment
+	 * @return
+	 * 			the score that the node receives
+	 */
 	public int eval(Node n, Environment e) {
+		//if the node breaks a hard constraint it is immediately set to the worst possible score
 		int score = 0;
 		if (!hardConstraint1(n.StringAssignments, e)) {
 			return Integer.MIN_VALUE;

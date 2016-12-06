@@ -45,6 +45,7 @@ public class SisyphusI {
 	protected Constraints con;
 	public boolean search = true;
 	protected Node bestNode = null;
+	protected long startTime = System.currentTimeMillis();
 
 	public SisyphusI(String[] args) {
 		this.args = args;
@@ -72,6 +73,9 @@ public class SisyphusI {
 			runInteractiveMode();
 			killShutdownHook();
 		}
+		
+		long endTime = System.currentTimeMillis();
+		System.out.println(endTime - startTime + "ms");
 	}
 
 	/**
@@ -138,7 +142,6 @@ public class SisyphusI {
 			try {
 				doSearch(env, timeLimit);
 				createOutputFile(bestNode, fileName);
-				System.out.println("\n\n"+ bestNode.score);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
@@ -176,30 +179,32 @@ public class SisyphusI {
 		if(env.getPeople().isEmpty()){
 			return;
 		}
+		//the size of each generation 
 		int GenSize = 200;
 		// create the first generation
 		Generation currentGen = createFirstGen(env, GenSize);
+		//if the current generation is null then no solution was found 
 		if(currentGen == null){
 			return;
 		}
 		currentGen.evaluate(env, con);
 		bestNode = currentGen.bestNode();
 		while (search) {
-			// mutate generations with currentGen as input
+			// mutate the current generation
+			//3 swaps between nodes, 3 swaps between rooms in a single node, 3 room changes in a node
 			currentGen.mutate(3, 3, 3, env);
 			// evaluate each of the nodes in the generation
 			currentGen.evaluate(env, con);
 			// cull generations of mutated nodes
 			currentGen = cullGeneration(currentGen, GenSize, (float) 0.8, (float) 0.2);
 
+			//test if the current node is better than the best so far
+			//if it is then make it the best node overall
 			Node curBest = currentGen.bestNode();
-			System.out.println(curBest.score);
 				if(curBest.score > bestNode.score){
 					bestNode = new Node(curBest);
 				}
 		}
-
-		// retrieve the best of the nodes in the current generation
 	}
 
 	private Generation createFirstGen(Environment env, int genSize) {
@@ -313,6 +318,16 @@ public class SisyphusI {
 		}
 		return genOne;
 	}
+	/**
+	 * A function that takes a generation of nodes with scores and takes returns a new generation with fewer 
+	 * nodes. The quality of theses nodes can be chosen.
+	 * @param gen - the generation you want to decrease in size
+	 * @param desiredSize - the size you wish the generation to be 
+	 * 						(cannot exceed the original size of the generation)
+	 * @param bestPercentage - the percent of nodes you would like to keep that are scored the best
+	 * @param worstPercentage - the percent of nodes you would like to keep that have the worst scores
+	 * @return	the original generation with the specified number of nodes 
+	 */
 
 	public Generation cullGeneration(Generation gen, int desiredSize, float bestPercentage, float worstPercentage) {
 		Generation newGen = new Generation(gen.genNumber);
@@ -321,16 +336,21 @@ public class SisyphusI {
 		// the worst nodes
 		float desirePercentage = (float) desiredSize / gen.size();
 
+		//retrieve the nodes best and worst nodes
 		Node[] bestNodes = gen.getBestOfGen(bestPercentage);
 		Node[] worstNodes = gen.getWorstOfGen(worstPercentage);
+		//determine the number of the best nodes to keep
 		int counter = Math.round(desirePercentage * bestNodes.length);
+		//determine the number of the worst nodes to keep
 		int counter2 = Math.round(desirePercentage * worstNodes.length);
+		//cannot grab more nodes than what exists
 		if (counter > bestNodes.length) {
 			counter = bestNodes.length;
 		}
 		if (counter2 > worstNodes.length) {
 			counter2 = worstNodes.length;
 		}
+		//grab specified percentage of best and worst
 		for (int i = 0; i < counter; i++) {
 			newGen.addFact(new Node(bestNodes[i]));
 		}
