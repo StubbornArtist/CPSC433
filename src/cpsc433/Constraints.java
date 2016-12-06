@@ -4,7 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashSet;
-
+/**
+ * A singleton class that holds methods to evaluate a fact with every hard and soft constraint
+ * @author Ashley Currie, Cooper Davies, Edraelan Ayuban, Erica Aguete
+ *
+ */
 public class Constraints {
 	private static Constraints instance = null;
 
@@ -293,18 +297,24 @@ public class Constraints {
 		return score;
 	}
 	/**
-	 * 
+	 * Check that secretaries share rooms with other secretaries.
 	 * @param a
+	 * 			A hash map of assignments in the person, room pairs
 	 * @param e
+	 * 			An instance of he environment
 	 * @return
+	 * 			The score of the fact 
 	 */
 	public int softConstraint4(LinkedHashMap<String, String> a, Environment e) {
 		Iterator<String> people = a.keySet().iterator();
 		Iterator<String> coworkers;
 		int score = 0;
-
+		//go through each person 
 		while (people.hasNext()) {
+			//current person
 			String person = people.next();
+			//if the person is a secretary then check that 
+			//anyone in the same room is also a secretary
 			if (e.e_secretary(person)) {
 				coworkers = a.keySet().iterator();
 				while (coworkers.hasNext()) {
@@ -772,280 +782,6 @@ public class Constraints {
 	}
 
 	/**
-	 * Handles soft constraints 1,4,11,13,16 because all of these can be handled
-	 * within an individual room. Rather than looping through each node every
-	 * single constraint, we can check them all as a conglomerate by simply
-	 * performing the individual checks every room
-	 * 
-	 * @param a
-	 *            The list of assignment held within a node
-	 * @param e
-	 *            The outside environment containing the fact set
-	 * @return The overall score the node achieved based on the soft constraints
-	 *         above
-	 */
-	public int softConstraintConglomerate14111316(LinkedHashMap<String, Assignment> a, Environment e) {
-		int score = 0;
-		HashSet<Person> people = null;
-		Room assigned = null;
-		boolean secretary = false;
-		boolean smoker = false;
-		boolean hacker = false;
-
-		for (Assignment assn : a.values()) {
-
-			people = assn.getPeople();
-			assigned = assn.getRoom();
-			// check constraint 16
-			if (assigned.getRoomSize() == 's') {
-				if (people.size() > 1) {
-					score -= 25;
-				}
-			}
-			for (Person per : people) {
-				// check constraint 1
-				for (Group grp : e.getGroups().values()) {
-					if (grp.getHeads().contains(per)) {
-						if (assigned.getRoomSize() != 'l') {
-							score -= 40;
-							break;
-						}
-					}
-				}
-				// check constraint 4
-				if (per.hasRole("secretary")) {
-					secretary = true;
-				}
-				if (!per.hasRole("secretary")) {
-					if (secretary) {
-						score -= 5;
-					}
-				}
-				// check constraint 11
-				if (per.smokes) {
-					smoker = true;
-				}
-				if (!per.smokes) {
-					if (smoker) {
-						score -= 50;
-					}
-				}
-				// check constraint 13
-				if (per.hacks && !per.hasRole("secretary")) {
-					hacker = true;
-				}
-				if (!per.hacks && !per.hasRole("secretary")) {
-					if (hacker) {
-						score -= 2;
-					}
-				}
-			}
-			//resetting
-			secretary = false;
-			smoker = false;
-			hacker = false;
-		}
-		return score;
-	}
-
-	/**
-	 * Handles soft constraints 2,3 because all of these can be handled
-	 * within an individual room. Rather than looping through each node every
-	 * single constraint, we can check them all as a conglomerate by simply
-	 * performing the individual checks every room
-	 * 
-	 * @param a
-	 *            The list of assignment held within a node
-	 * @param e
-	 *            The outside environment containing the fact set
-	 * @return The overall score the node achieved based on the soft constraints
-	 *         above
-	 */
-	public int softConstraintConglomerate23(LinkedHashMap<String, String> a, Environment e) {
-		int score = 0;
-		boolean isClose = false;
-		Iterator<String> heads;
-		Iterator<String> members;
-		int numSec = 0;
-		boolean closeToOne = false;
-		LinkedHashMap<String, Group> groups = e.getGroups();
-		Iterator<String> groupsIt = groups.keySet().iterator();
-
-		while (groupsIt.hasNext()) {
-			Group g = groups.get(groupsIt.next());
-			heads = g.getHeadIterator();
-			while (heads.hasNext()) {
-				String head = heads.next();
-				members = g.membersIterator();
-				while (members.hasNext()) {
-					String mem = members.next();
-					if (e.e_close(a.get(head), a.get(mem))) {
-						isClose = true;
-					}
-					if (e.e_secretary(mem)) {
-						numSec++;
-						if (e.e_close(a.get(head), a.get(mem)))
-							closeToOne = true;
-					} else
-						isClose = false;
-					if (!closeToOne && numSec > 0)
-						score += -30;
-					if (!isClose && !mem.equals(head))
-						score -= 2;
-				}
-			}
-			//resetting for next group
-			isClose = false;
-			closeToOne = false;
-		}
-		return score;
-	}
-
-	/**
-	 * Handles soft constraints 5,6,7 because all of these can be handled
-	 * within an individual room. Rather than looping through each node every
-	 * single constraint, we can check them all as a conglomerate by simply
-	 * performing the individual checks every room
-	 * 
-	 * @param a
-	 *            The list of assignment held within a node
-	 * @param e
-	 *            The outside environment containing the fact set
-	 * @return The overall score the node achieved based on the soft constraints
-	 *         above
-	 */
-	public int softConstraintConglomerate567(LinkedHashMap<String, String> a, Environment e) {
-		boolean isCloseSecretary = false;
-		boolean isCloseGroupHead = false;
-		boolean isCloseMembers = false;
-		int score = 0;
-
-		for (String p : a.keySet()) {
-			if (e.e_manager(p)) {
-				for (String gs : e.getGroups().keySet()) {
-					if (e.e_group(p, gs)) {
-						// get group p is in
-						Group g = e.getGroups().get(gs);
-						Iterator<String> m = g.membersIterator();
-
-						// iterate through group members
-						while (m.hasNext()) {
-							String m2 = m.next();
-							// if we encounter a secretary
-							if (e.e_secretary(m2)) {
-								if (e.e_close(a.get(p), a.get(m2))) {
-									isCloseSecretary = true;
-								}
-								// if no secretaries are close, penalize
-								if (!isCloseSecretary)
-									score -= 20;
-							}
-							if (e.e_heads_group(m2, gs)) {
-
-								// iterate through rooms ss close to room r
-								if (e.e_close(a.get(p), a.get(m2))) {
-									isCloseGroupHead = true;
-								}
-								// if no group heads are close, penalize
-								if (!isCloseGroupHead)
-									score -= 20;
-							}
-							// iterate through rooms ss close to room r
-							if (e.e_close(a.get(p), a.get(m2))) {
-								isCloseMembers = true;
-							}
-							// if m not in any of the rooms close to r, penalize
-							if (!isCloseMembers && !m2.equals(p))
-								score -= 2;
-							// reset boolean
-							isCloseMembers = false;
-							isCloseGroupHead = false;
-							isCloseSecretary = false;
-
-						}
-					}
-				}
-			}
-		}
-		return score;
-	}
-	
-	/**
-	 * Handles soft constraints 5,6,7 because all of these can be handled
-	 * within an individual room. Rather than looping through each node every
-	 * single constraint, we can check them all as a conglomerate by simply
-	 * performing the individual checks every room
-	 * 
-	 * @param a
-	 *            The list of assignment held within a node
-	 * @param e
-	 *            The outside environment containing the fact set
-	 * @return The overall score the node achieved based on the soft constraints
-	 *         above
-	 */
-	public int softConstraintConglomerate8910(LinkedHashMap<String, String> a, Environment e) {
-		int score = 0;
-		// grabbing the projects
-		LinkedHashMap<String, Project> projects = e.projects;
-		LinkedHashMap<String, Group> groups = e.getGroups();
-		HashSet<String> groupHeads = new HashSet<String>();
-		
-		
-		for (Group gr : groups.values()) {
-			for (String head : gr.getHeads()) {
-				groupHeads.add(head);
-			}
-		}
-		// grab the project Heads
-		for (Project proj : projects.values()) {
-			if (!proj.isLarge())
-				continue;
-			Room headRoom = null;
-			String secretaryRoom = null;
-			boolean oneSecr = false;
-			boolean allClose = true;
-			for (String head : proj.getHeads()) {
-				headRoom = e.getRooms().get(a.get(head));
-				for (String member : proj.getMembers()) {
-					
-					//checking for group heads being close
-					if (groupHeads.contains(member)) {
-						String groupHeadRoom = a.get(member);
-						if (!headRoom.close_to.contains(groupHeadRoom)) {
-							score -= 10;
-						}
-					}
-					//checking for a secretary being close
-					if (e.getPeople().get(member).hasRole("secretary")) {
-						secretaryRoom = a.get(member);
-						if (headRoom.close_to.contains(secretaryRoom)) {
-							oneSecr = true;
-						}
-					}
-					//checking for all members being close
-					if (allClose == true) {
-						String memberRoom = a.get(member);
-						if (!headRoom.close_to.contains(memberRoom)) {
-							allClose = false;
-						}
-					}
-				}
-				if (oneSecr == false) {
-					score -= 10;
-				}
-				if(allClose == false){
-					score -= 5;
-				}
-				// resetting for next head
-				oneSecr = false;
-				allClose = true;
-			}
-
-		}
-		return score;
-
-	}
-	/**
 	 * Evaluate a node with all constraints
 	 * @param n
 	 * 			the node to evaluate
@@ -1072,6 +808,8 @@ public class Constraints {
 		if(!hardConstraint5(n.StringAssignments,e)){
 			return Integer.MIN_VALUE;
 		}
+		//if no hard constraints are broken then accumulate 
+		//the penalties for breaking soft constraints
 		score += softConstraint1(n.StringAssignments, e);
 		score += softConstraint2(n.StringAssignments, e);
 		score += softConstraint3(n.StringAssignments, e);
