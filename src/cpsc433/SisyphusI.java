@@ -179,6 +179,9 @@ public class SisyphusI {
 		int GenSize = 200;
 		// create the first generation
 		Generation currentGen = createFirstGen(env, GenSize);
+		if(currentGen == null){
+			return;
+		}
 		currentGen.evaluate(env, con);
 		bestNode = currentGen.bestNode();
 		while (search) {
