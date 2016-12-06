@@ -11,6 +11,10 @@ public class Node {
 	public LinkedHashMap<String, Assignment> Assignments;
 	public int score;
 	
+	public Node(){
+		this.Assignments = new LinkedHashMap<String, Assignment>();
+		this.StringAssignments = new LinkedHashMap<String, String>();
+	}
 	public Node(LinkedHashMap<String, Assignment> assigns){
 		this.Assignments = assigns;
 		this.score = 0;

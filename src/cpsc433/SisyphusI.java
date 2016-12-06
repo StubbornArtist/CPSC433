@@ -110,7 +110,7 @@ public class SisyphusI {
 		try {
 			FileWriter writer = new FileWriter(fileName);
 			if (n == null) {
-				writer.write("No solution");
+				writer.write("//No solution");
 			} else {
 				Iterator<String> peopleIt = n.StringAssignments.keySet().iterator();
 				while (peopleIt.hasNext()) {
@@ -137,9 +137,8 @@ public class SisyphusI {
 			System.out.println("Performing search for " + timeLimit + "ms");
 			try {
 				doSearch(env, timeLimit);
-				System.out.println(bestNode);
-				System.out.println(bestNode.altToString());
 				createOutputFile(bestNode, fileName);
+				System.out.println("\n\n"+ bestNode.score);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
@@ -170,7 +169,13 @@ public class SisyphusI {
 			}
 
 		};
-		timeout.schedule(killSearch, (long) (timeLimit * 0.9));
+		if(timeLimit-2000 <= 0){
+			timeLimit +=2000;
+		}
+		timeout.schedule(killSearch, (long) (timeLimit -2000));
+		if(env.getPeople().isEmpty()){
+			return;
+		}
 		int GenSize = 200;
 		// create the first generation
 		Generation currentGen = createFirstGen(env, GenSize);
@@ -183,8 +188,9 @@ public class SisyphusI {
 			currentGen.evaluate(env, con);
 			// cull generations of mutated nodes
 			currentGen = cullGeneration(currentGen, GenSize, (float) 0.8, (float) 0.2);
-	
+
 			Node curBest = currentGen.bestNode();
+			System.out.println(curBest.score);
 				if(curBest.score > bestNode.score){
 					bestNode = new Node(curBest);
 				}
@@ -216,8 +222,8 @@ public class SisyphusI {
 			}
 			// Assign our hard assignments
 			for (String person : env.getAssignments().keySet()) {
-				// grab the person
 				if(roomList.isEmpty()) return null;
+				// grab the person
 				Person p = env.getPeople().get(person);
 				// grab the room
 				Room r = env.getRooms().get(env.getAssignments().get(person));
@@ -242,10 +248,14 @@ public class SisyphusI {
 
 			// Assign the heads
 			for (String p : heads) {
-				// grab the person
+				//if the person has been assigned skip
 				if(StringAssigns.containsKey(p)) continue;
+				
+				//if there are no more rooms this is not a valid solution
 				if(roomList.isEmpty()) return null;
+				//grab the person that corresponds to the name
 				Person headPersonToAdd = env.getPeople().get(p);
+				
 				// pick a random room
 				int roomNumberToUse = rand.nextInt(roomList.size());
 				Room roomToUse = roomList.get(roomNumberToUse);
@@ -255,7 +265,7 @@ public class SisyphusI {
 					roomNumberToUse = rand.nextInt(roomList.size());
 					roomToUse = roomList.get(roomNumberToUse);
 				}
-				// set the assignment
+				// create a new assignment with the head in it
 				Assignment a = new Assignment(roomToUse, headPersonToAdd);
 				assignment.put(roomToUse.getRoomNumber(), a);
 				StringAssigns.put(p, roomToUse.getRoomNumber());
@@ -266,10 +276,12 @@ public class SisyphusI {
 
 			// Assign everyone else
 			for (Person p : pepes) {
-				// pick a random room
-				if(StringAssigns.containsKey(p.name)) continue;
-				if(roomList.isEmpty()) return null;
 				
+				//if the person has been assigned skip 
+				if(StringAssigns.containsKey(p.name)) continue;
+				//if no rooms remain this is not a valid solution (null indicates no solution)
+				if(roomList.isEmpty()) return null;
+				//pick a random room
 				int roomNumberToUse = rand.nextInt(roomList.size());
 				Room roomToUse = roomList.get(roomNumberToUse);
 
@@ -278,22 +290,22 @@ public class SisyphusI {
 					roomNumberToUse = rand.nextInt(roomList.size());
 					roomToUse = roomList.get(roomNumberToUse);
 				}
+				//if the room has a previous assignment in it just ad the new person to it
+				//otherwise create a new assignment with the person
 				if(assignment.containsKey(roomToUse.getRoomNumber())){
 					assignment.get(roomToUse.getRoomNumber()).addPerson(p);
 				}
 				else{
 					assignment.put(roomToUse.getRoomNumber(), new Assignment(roomToUse, p));
 				}
+				//remove the room as an option once it reaches capacity
 				if(assignment.get(roomToUse.getRoomNumber()).size() > 1) {
 					roomList.remove(roomNumberToUse);
 				}
-				//assign them the room
-
-				// set the assignments in the hasMap
+				// set the assignments in the hashMap
 				StringAssigns.put(p.name, roomToUse.getRoomNumber());
-				// don't need to worry about removing because this is
-				// essentially an iterator
 			}
+			//add each fact to the initial generation
 			genOne.addFact(assignment, StringAssigns);
 		}
 		return genOne;
@@ -317,10 +329,10 @@ public class SisyphusI {
 			counter2 = worstNodes.length;
 		}
 		for (int i = 0; i < counter; i++) {
-			newGen.addFact(bestNodes[i]);
+			newGen.addFact(new Node(bestNodes[i]));
 		}
 		for (int i = 0; i < counter2; i++) {
-			newGen.addFact(worstNodes[i]);
+			newGen.addFact(new Node(worstNodes[i]));
 		}
 		return newGen;
 	}

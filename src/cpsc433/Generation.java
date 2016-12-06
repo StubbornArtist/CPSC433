@@ -71,8 +71,8 @@ public class Generation {
 			num2 = rand.nextInt(size());
 		}while(num2 == num1);
 		
-		Node n1 = factAt(num2);
-		Node n2 = factAt(num1);
+		Node n1 = new Node(factAt(num2));
+		Node n2 = new Node(factAt(num1));
 		Person p;
 		Assignment a1;
 		Room room;
@@ -84,7 +84,10 @@ public class Generation {
 		n1.put(p, room);
 		
 		n2.remove(p, room);
-		n2.put(p, a1.getRoom());		
+		n2.put(p, a1.getRoom());
+		
+		addFact(n1);
+		addFact(n2);
 	}
 
 	public Node bestNode(){
@@ -123,7 +126,7 @@ public class Generation {
 		
 		int j = facts.size() - 1;
 		for (int i = 0; i < best.length; i++){
-			best[i] = sorted[j];
+			best[i] = new Node(sorted[j]);
 			j--;
 		}
 		
@@ -136,7 +139,7 @@ public class Generation {
 		Node[] sorted = sortGen();
 		
 		for (int i =0; i < worst.length; i++){
-			worst[i] = sorted[i];
+			worst[i] = new Node(sorted[i]);
 		}
 		
 		return worst;
@@ -151,7 +154,11 @@ public class Generation {
 		}
 		
 		NodeQuickSort.sort(nArray, 0, nArray.length - 1);
-				
+//		for(int i = 0; i < nArray.length; i++){
+//			System.out.print(nArray[i].score+ " ");
+//			
+//		}
+//		System.out.println();
 		return nArray;
 	}
 		
