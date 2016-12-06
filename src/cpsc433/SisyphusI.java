@@ -45,7 +45,6 @@ public class SisyphusI {
 	protected Constraints con;
 	public boolean search = true;
 	protected Node bestNode = null;
-	protected long startTime = System.currentTimeMillis();
 
 	public SisyphusI(String[] args) {
 		this.args = args;
@@ -74,8 +73,6 @@ public class SisyphusI {
 			killShutdownHook();
 		}
 		
-		long endTime = System.currentTimeMillis();
-		System.out.println(endTime - startTime + "ms");
 	}
 
 	/**
@@ -172,10 +169,7 @@ public class SisyphusI {
 			}
 
 		};
-		if(timeLimit-2000 <= 0){
-			timeLimit +=2000;
-		}
-		timeout.schedule(killSearch, (long) (timeLimit -2000));
+		timeout.schedule(killSearch, (long) (timeLimit * 0.9));
 		if(env.getPeople().isEmpty()){
 			return;
 		}
