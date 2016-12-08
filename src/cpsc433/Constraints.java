@@ -7,7 +7,6 @@ import java.util.HashSet;
 /**
  * A singleton class that holds methods to evaluate a fact with every hard and soft constraint
  * @author Ashley Currie, Cooper Davies, Edraelan Ayuban, Erica Aguete
- *
  */
 public class Constraints {
 	private static Constraints instance = null;
@@ -21,38 +20,34 @@ public class Constraints {
 		}
 		return instance;
 	}
+	
 	/**
-	 * Checks that all people from the environment have been assigned a room.
-	 * @param a
-	 * 			A hash map representing room assignments with person, room pairs
-	 * @param e
-	 * 			An instance of the environment
-	 * @return
-	 * 			Whether the hard constraint has been broken (false) or not (true)
+	 * Hard Constraint: All people from the environment have been assigned a room
+	 * 
+	 * @param a	: A hash map representing room assignments with person, room pairs
+	 * @param e : Environment of the search process
+	 * @return Whether the constraint was broken (false) or not (true)
 	 */
-
 	public boolean hardConstraint1(LinkedHashMap<String, String> a, Environment e) {
 		Iterator<String> people = e.getPeople().keySet().iterator();
-
+		
+		// iterate through list of people in environment
 		while (people.hasNext()) {
+			// if assignment does not contain a person in the environment
+			// return false
 			if (!a.containsKey(people.next())) {
 				return false;
 			}
-		}
-
-		return true;
+		} return true;
 	}
 
 	/**
 	 * Hard Constraint: No person is assigned more than one room.
 	 * 
-	 * @param a
-	 *            : hashmap containing keys of room names and an assignment
+	 * @param a : A hash map containing keys of room names and an assignment
 	 *            containing: the room; people assigned to the room.
-	 * @param e
-	 *            : environment of the search process
-	 * @return true if for all p:Person, there does not exist r,s:Room such that
-	 *         assigned-to(p,r) && assigned-to(p,s).
+	 * @param e : Environment of the search process
+	 * @return Whether the constraint was broken (false) or not (true)
 	 */
 	public boolean hardConstraint2(LinkedHashMap<String, Assignment> a, Environment e) {
 		for (String r : a.keySet()) {
@@ -75,13 +70,11 @@ public class Constraints {
 	}
 
 	/**
-	 * Checks that no room contains more than two people.
-	 * @param a
-	 * 			A hash map of room assignments in room, list of people pairs
-	 * @param e
-	 * 			An instance of the environment
-	 * @return
-	 * 			Whether the constraint was broken (false) or not (true)
+	 * Hard Constraint: No room contains more than two people.
+	 * 
+	 * @param a : A hash map of room assignments in room, list of people pairs
+	 * @param e : Environment of the search process
+	 * @return Whether the constraint was broken (false) or not (true)
 	 */
 	public boolean hardConstraint3(LinkedHashMap<String, Assignment> a, Environment e) {
 		//loop through each room that is assigned
@@ -90,19 +83,15 @@ public class Constraints {
 			if (assn.getPeople().size() > 2) {
 				return false;
 			}
-		}
-		return true;
-
+		} return true;
 	}
 
 	/**
-	 * Check that every manager, group head, and project head has their own room.
-	 * @param a
-	 * 			A hash map of room assignments in room, list of person pairs
-	 * @param e
-	 * 			An instance of the environment 
-	 * @return
-	 * 			Whether the constraint was broken (false) or not (true)
+	 * Hard Constraint: Every manager, group head, and project head has their own room.
+	 * 
+	 * @param a : A hash map of room assignments in room, list of person pairs
+	 * @param e : Environment of the search process
+	 * @return Whether the constraint was broken (false) or not (true)
 	 */
 	public boolean hardConstraint4(LinkedHashMap<String, Assignment> a, Environment e) {
 
@@ -149,20 +138,22 @@ public class Constraints {
 					}
 				}
 			}
-		}
-		return true;
+		} return true;
 	}
+	
 	/**
-	 * Check that all people assigned initially remain assigned 
-	 * @param a
-	 * 			hashmap with person room pairs reprsenting room assignments
-	 * @param e
-	 * 			an instance of the environment
-	 * @return
-	 * 			whether it passes (true) or fails (false)
+	 * Hard Constraint: All people assigned initially remain assigned.
+	 * Added as an ADDITIONAL constraint to maintain hard-coded assignments.
+	 *  
+	 * @param a : A hash map with person room pairs representing room assignments
+	 * @param e : Environment of the search process.
+	 * @return Whether the constraint was broken (false) or not (true)
 	 */
 	public boolean hardConstraint5(LinkedHashMap<String, String> a, Environment e){
+		// iterate through assignments in environment
 		for(String p: e.getAssignments().keySet()){
+			// if a person is assigned a different room than in the environment
+			// return false
 			if(!a.get(p).equals(e.getAssignments().get(p))){
 				return false;
 			}
@@ -171,14 +162,12 @@ public class Constraints {
 	}
 
 	/**
-	 * Check whether all group heads are  in large rooms. A penalty of -40 is given every 
-	 * time the constraint is broken.
-	 * @param a
-	 * 			A list of room assignments in person, room pairs
-	 * @param e
-	 * 			An instance of the environment
-	 * @return
-	 * 			The score that the particular fact received for this constraint
+	 * Soft Constraint: Group heads should have a large office.
+	 * A penalty of -40 is given every time the constraint is violated.
+	 * 
+	 * @param a : A list of room assignments in person, room pairs
+	 * @param e : Environment of the search process
+	 * @return The score that the particular fact received for this constraint
 	 */
 	public int softConstraint1(LinkedHashMap<String, String> a, Environment e) {
 		int score = 0;
@@ -192,18 +181,16 @@ public class Constraints {
 					score += -40;
 				}
 			}
-		}
-		return score;
+		} return score;
 	}
 
 	/**
-	 * Check that group heads are close to all members of their group
-	 * @param a
-	 * 			A list of room assignments in person, room pairs
-	 * @param e
-	 * 			An instance of the environment
-	 * @return
-	 * 			The score that the fact received for this constraint
+	 * Soft Constraint: Group heads should be close to all members of their group.
+	 * A penalty of -2 is given every time the constraint is violated.
+	 * 
+	 * @param a : A hash map of room assignments in person, room pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
 	 */
 	public int softConstraint2(LinkedHashMap<String, String> a, Environment e) {
 		int score = 0;
@@ -244,16 +231,15 @@ public class Constraints {
 		}
 		return score;
 	}
+	
 	/**
-	 * Check that each group head is close to at least one secretary in their group.
-	 * @param a
-	 * 			A hash map of room assignments in person, room pairs
-	 * @param e
-	 * 			An instance of the environment
-	 * @return
-	 * 			The score the fact received for this constraint
+	 * Soft Constraint: Group heads are close to at least one secretary in their group.
+	 * A penalty of -30 is given each time the constraint is violated. 
+	 * 
+	 * @param a : A hash map of room assignments in person, room pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
 	 */
-
 	public int softConstraint3(LinkedHashMap<String, String> a, Environment e) {
 		Iterator<String> heads;
 		Iterator<String> members;
@@ -296,14 +282,14 @@ public class Constraints {
 		}
 		return score;
 	}
+	
 	/**
-	 * Check that secretaries share rooms with other secretaries.
-	 * @param a
-	 * 			A hash map of assignments in the person, room pairs
-	 * @param e
-	 * 			An instance of he environment
-	 * @return
-	 * 			The score of the fact 
+	 * Soft Constraint: Secretaries should share offices with other secretaries.
+	 * A penalty of -5 is given each time the constraint is violated.
+	 * 
+	 * @param a : A hash map of room assignments in person, room pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
 	 */
 	public int softConstraint4(LinkedHashMap<String, String> a, Environment e) {
 		Iterator<String> people = a.keySet().iterator();
@@ -329,16 +315,12 @@ public class Constraints {
 	}
 
 	/**
-	 * Soft Constraint: All managers should be close to at least one secretary
-	 * in their group. Accumulate 20 penalty points for each group head that is
-	 * not close to at least one secretary in their group.
+	 * Soft Constraint: Managers should be close to at least one secretary in their group.
+	 * A penalty of -20 is given every time the constraint is violated.
 	 * 
-	 * @param a
-	 *            : hashmap containing: (key) the room name; (value) the name of
-	 *            the person assigned to the room.
-	 * @param e:
-	 *            environment of the search process
-	 * @return pen: total penalty points for violating this constraint
+	 * @param a : A hash map of room assignments in person, room pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
 	 */
 	public int softConstraint5(LinkedHashMap<String, String> a, Environment e) {
 		boolean isClose = false;
@@ -376,20 +358,16 @@ public class Constraints {
 	}
 
 	/**
-	 * Soft Constraint: All managers should be close to their group head.
-	 * Accumulate 20 penalty points for each group head that is not close to at
-	 * least one secretary in their group.
+	 * Soft Constraint: Managers should be close to their group's head.
+	 * A penalty of -20 is given every time the constraint is violated.
 	 * 
-	 * @param a
-	 *            : hashmap containing: (key) the room name; (value) the name of
-	 *            the person assigned to the room.
-	 * @param e:
-	 *            environment of the search process
-	 * @return total penalty points for violating this constraint
+	 * @param a : A hash map of room assignments in person, room pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
 	 */
 	public int softConstraint6(LinkedHashMap<String, String> a, Environment e) {
 		boolean isClose = false;
-		int pen = 0;
+		int score = 0;
 
 		for (String p : a.keySet()) {
 			if (e.e_manager(p)) {
@@ -410,7 +388,7 @@ public class Constraints {
 								}
 								// if no group heads are close, penalize
 								if (!isClose)
-									pen -= 20;
+									score -= 20;
 							} // no need to iterate through group members to
 								// search for more heads
 							if (isClose)
@@ -420,24 +398,20 @@ public class Constraints {
 				}
 			}
 		}
-		return pen;
+		return score;
 	}
 
 	/**
-	 * Soft Constraint: All managers should be close to all members of their
-	 * group. Accumulate 2 penalty points for each group head that is not close
-	 * to at least one secretary in their group.
+	 * Soft Constraint: Managers should be close to all members of their group.
+	 * A penalty of -2 is given every time the constraint is violated.
 	 * 
-	 * @param a
-	 *            : hashmap containing: (key) the room name; (value) the name of
-	 *            the person assigned to the room.
-	 * @param e:
-	 *            environment of the search process
-	 * @return total penalty points for violating this constraint
+	 * @param a : A hash map of room assignments in person, room pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
 	 */
 	public int softConstraint7(LinkedHashMap<String, String> a, Environment e) {
 		boolean isClose = false;
-		int pen = 0;
+		int score = 0;
 
 		for (String p : a.keySet()) {
 
@@ -458,7 +432,7 @@ public class Constraints {
 							}
 							// if m not in any of the rooms close to r, penalize
 							if (!isClose && !m2.equals(p))
-								pen -= 2;
+								score -= 2;
 							// reset boolean
 							isClose = false;
 
@@ -467,24 +441,20 @@ public class Constraints {
 				}
 			}
 		}
-		return pen;
+		return score;
 	}
 
 	/**
-	 * Soft Constraint: All project heads should be close to all members of
-	 * their project. Accumulate 5 penalty points for each group head that is
-	 * not close to at least one secretary in their group.
+	 * Soft Constraint: Project heads should be close to all members of their projects.
+	 * A penalty of -5 is given every time the constraint is violated.
 	 * 
-	 * @param a
-	 *            : hashmap containing: (key) the room name; (value) the name of
-	 *            the person assigned to the room.
-	 * @param e:
-	 *            environment of the search process
-	 * @return total penalty points for violating this constraint
+	 * @param a : A hash map of room assignments in person, room pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
 	 */
 	public int softConstraint8(LinkedHashMap<String, String> a, Environment e) {
 		boolean isClose = false;
-		int pen = 0;
+		int score = 0;
 
 		for (String p : a.keySet()) {
 
@@ -504,16 +474,25 @@ public class Constraints {
 						}
 						// if m not in any of the rooms close to r, penalize
 						if (!isClose && !m2.equals(p))
-							pen -= 5;
+							score -= 5;
 						// reset boolean
 						isClose = false;
 					}
 				}
 			}
 		}
-		return pen;
+		return score;
 	}
 
+	/**
+	 * Soft Constraint: Large project heads should be close
+	 * at least one secretary in their group.
+	 * A penalty of -10 is given every time the constraint is violated.
+	 * 
+	 * @param a : A hash map of room assignments in person, room pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
+	 */
 	public int softConstraint9(LinkedHashMap<String, String> a, Environment e) {
 		int score = 0;
 		// grabbing the projects
@@ -542,12 +521,17 @@ public class Constraints {
 				// resetting for next head
 				oneSecr = false;
 			}
-
-		}
-		return score;
-
+		} return score;
 	}
 
+	/**
+	 * Soft Constraint: large project heads should be close to the head of their group.
+	 * A penalty of -10 is given every time the constraint is violated.
+	 * 
+	 * @param a : A hash map of room assignments in person, room pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
+	 */
 	public int softConstraint10(LinkedHashMap<String, String> a, Environment e) {
 		int score = 0;
 		// grabbing the projects
@@ -582,6 +566,14 @@ public class Constraints {
 		return score;
 	}
 
+	/**
+	 * Soft Constraint: A smoker shouldn't share an office with a non-smoker.
+	 * A penalty of -50 is given every time the constraint is violated.
+	 * 
+	 * @param a : A hash map of room, assignment pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
+	 */
 	public int softConstraint11(LinkedHashMap<String, Assignment> a, Environment e) {
 		// The people we have already looked at, so we dont count them twice.
 		HashSet<Person> checked = new HashSet<Person>();
@@ -615,6 +607,15 @@ public class Constraints {
 
 	}
 
+	/**
+	 * Soft Constraint: Members of the same project should not
+	 * share and office (to encourage synergy).
+	 * A penalty of -7 is given every time the constraint is violated.
+	 * 
+	 * @param a : A hash map of room, assignment pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
+	 */
 	public int softConstraint12(LinkedHashMap<String, Assignment> a, Environment e) {
 		// The people we have already looked at, so we dont count them twice.
 		HashSet<Person> checked = new HashSet<Person>();
@@ -660,11 +661,18 @@ public class Constraints {
 
 	}
 
-	// If a non-secretary hacker/non-hacker shares an office, then he/she
-	// should share with another hacker/non-hacker
+	/**
+	 * Soft Constraint: If a non-secretary hacker/non-hacker shares an office, then
+	 * they should share with another hacker/non-hacker
+	 * A penalty of -2 is given every time the constraint is violated.
+	 * 
+	 * @param a : A hash map of room, assignment pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
+	 */
 	public int softConstraint13(LinkedHashMap<String, Assignment> a, Environment e) {
 
-		int penalty = 0;
+		int score = 0;
 		Assignment assign;
 		HashSet<Person> people = null;
 		Iterator<Person> it;
@@ -690,24 +698,31 @@ public class Constraints {
 					// non-hacker.
 					// If so, apply penalty.
 					if (!e.e_hacker(person1.name) && e.e_hacker(person2.name)) {
-						penalty += -2;
+						score += -2;
 					}
 
 					// Check if 'person1' is a non-hacker and if 'person2' is a
 					// hacker.
 					// If so, apply penalty
 					else if (e.e_hacker(person1.name) && !e.e_hacker(person2.name)) {
-						penalty += -2;
+						score += -2;
 					}
 				}
 			}
 		}
-		return penalty;
+		return score;
 	}
 
-	// People prefer their own room
+	/**
+	 * Soft Constraint: People prefer to have their own offices.
+	 * A penalty of -4 is given every time the constraint is violated.
+	 * 
+	 * @param a : A hash map of room, assignment pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
+	 */
 	public int softConstraint14(LinkedHashMap<String, Assignment> a, Environment e) {
-		int penalty = 0;
+		int score = 0;
 		Assignment assign;
 		HashSet<Person> people = null;
 
@@ -719,15 +734,22 @@ public class Constraints {
 			people = assign.getPeople();
 
 			if (people.size() > 1) {
-				penalty += people.size() * -4;
+				score += people.size() * -4;
 			}
 		}
-		return penalty;
+		return score;
 	}
 
-	// If two people share an office, they should work together
+	/**
+	 * Soft Constraint: If two people share an office, they should work together.
+	 * A penalty of -3 is given every time the constraint is violated.
+	 * 
+	 * @param a : A hash map of room, assignment pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
+	 */
 	public int softConstraint15(LinkedHashMap<String, Assignment> a, Environment e) {
-		int penalty = 0;
+		int score = 0;
 		Assignment assign;
 		HashSet<Person> people = null;
 		Iterator<Person> it;
@@ -748,17 +770,24 @@ public class Constraints {
 
 				// Check if both are non-secretaries
 				if (!e.e_works_with(person1.name, person2.name)) {
-					penalty += -3;
+					score += -3;
 				}
 			}
 		}
-		return penalty;
+		return score;
 	}
 
-	// Two people shouldn't share a small room
+	/**
+	 * Soft Constraint: Two people shouldn't share a small room.
+	 * A penalty of -25 is given every time the constraint is violated.
+	 * 
+	 * @param a : A hash map of room, assignment pairs
+	 * @param e : An instance of the environment
+	 * @return Total accumulated penalty points.
+	 */
 	public int softConstraint16(LinkedHashMap<String, Assignment> a, Environment e) {
 
-		int penalty = 0;
+		int score = 0;
 		Assignment assign;
 		HashSet<Person> people = null;
 		Room room;
@@ -774,21 +803,19 @@ public class Constraints {
 
 			if (people.size() > 1) {
 				if (room.getRoomSize() == 's') {
-					penalty += -25;
+					score += -25;
 				}
 			}
 		}
-		return penalty;
+		return score;
 	}
 
 	/**
-	 * Evaluate a node with all constraints
-	 * @param n
-	 * 			the node to evaluate
-	 * @param e
-	 * 			an instance of the environment
-	 * @return
-	 * 			the score that the node receives
+	 * Evaluates a node according to the constraints.
+	 * 
+	 * @param n : the node to evaluate
+	 * @param e : Environment of the search process
+	 * @return The score that the node receives
 	 */
 	public int eval(Node n, Environment e) {
 		//if the node breaks a hard constraint it is immediately set to the worst possible score
