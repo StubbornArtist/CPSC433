@@ -1,5 +1,10 @@
 package cpsc433;
 
+/**
+ * A data structure to hold information about projects
+ * @author Ashley Currie, Cooper Davies, Edraelan Ayuban, Erica Aguete
+ */
+
 public class Project extends Group{
 	private boolean largeProject;
 	
