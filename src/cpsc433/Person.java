@@ -1,5 +1,9 @@
 package cpsc433;
 
+/**
+ * A data structure to hold information about a person
+ * @author Ashley Currie, Cooper Davies, Edraelan Ayuban, Erica Aguete
+ */
 import java.util.HashSet;
 
 public class Person {
