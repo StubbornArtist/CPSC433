@@ -3,6 +3,10 @@ package cpsc433;
 import java.util.HashSet;
 import java.util.Iterator;
 
+/**
+ * A data structure to hold information about rooms
+ * @author Ashley Currie, Cooper Davies, Edraelan Ayuban, Erica Aguete
+ */
 public class Room {
 	
 	private String number;
