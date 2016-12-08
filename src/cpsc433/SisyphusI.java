@@ -150,7 +150,7 @@ public class SisyphusI {
 	}
 
 	/**
-	 * Perform the actual search
+	 * Perform the actual search. Runs for 90% of the allowed time.
 	 * 
 	 * @param env
 	 *            An Environment object.
@@ -315,6 +315,7 @@ public class SisyphusI {
 	/**
 	 * A function that takes a generation of nodes with scores and takes returns a new generation with fewer 
 	 * nodes. The quality of theses nodes can be chosen.
+	 * 
 	 * @param gen - the generation you want to decrease in size
 	 * @param desiredSize - the size you wish the generation to be 
 	 * 						(cannot exceed the original size of the generation)
