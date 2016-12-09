@@ -196,7 +196,7 @@ public class Node {
 	 * @return
 	 * 			The new fact after the mutation
 	 */
-	public Node changeRooms(Environment e){
+	public Node changeRooms(){
 		//new node that is currently identical to this node
 		Node newNode = new Node(this);
 		
@@ -225,7 +225,7 @@ public class Node {
 	 * 			An instance of the environment
 	 * @return
 	 */
-	public Node swapRooms(Environment e){
+	public Node swapRooms(){
 		//new fact that is currently identical to this fact
 		Node newNode = new Node(this);
 		

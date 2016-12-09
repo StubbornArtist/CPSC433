@@ -86,7 +86,11 @@ public class SisyphusI {
 	protected Environment getEnvironment() {
 		return Environment.get();
 	}
-
+	/**
+	 * Return the instance of the constraints.
+	 * 
+	 * @return global constraints object.
+	 */
 	protected Constraints getConstraints() {
 		return Constraints.getInstance();
 	}
@@ -106,7 +110,14 @@ public class SisyphusI {
 
 	protected void killShutdownHook() {
 	}
-
+	
+	/**
+	 * A function that generates an output file with the assignments in the assignment of a node
+	 * @param n
+	 * 			The node we want to out file for
+	 * @param fileName
+	 * 			The name of the output file
+	 */
 	protected void createOutputFile(Node n, String fileName) {
 		try {
 			FileWriter writer = new FileWriter(fileName);
@@ -186,7 +197,7 @@ public class SisyphusI {
 		while (search) {
 			// mutate the current generation
 			//3 swaps between nodes, 3 swaps between rooms in a single node, 3 room changes in a node
-			currentGen.mutate(3, 3, 3, env);
+			currentGen.mutate(3, 3, 3);
 			// evaluate each of the nodes in the generation
 			currentGen.evaluate(env, con);
 			// cull generations of mutated nodes
@@ -200,9 +211,19 @@ public class SisyphusI {
 				}
 		}
 	}
+	/**
+	 * The function which creates our first generation, which is a valid solution.
+	 * 
+	 * @param env
+	 * 			An instance of the environment
+	 * @param genSize
+	 * 			The number of facts that will be in the generation
+	 * @return
+	 */
 
 	private Generation createFirstGen(Environment env, int genSize) {
 		Random rand = new Random();
+		//create a generation with number 0
 		Generation genOne = new Generation(0);
 		// A generation of genSize facts
 		for (int i = 0; i < genSize; i++) {
@@ -213,12 +234,15 @@ public class SisyphusI {
 			HashSet<String> heads = new HashSet<String>();
 			HashSet<Person> pepes = new HashSet<Person>();
 			
+			//create a safe copy of the people in the evironment
 			for(Person p: env.getPeople().values()){
 				pepes.add(p);
 			}
+			//safe copy of heads
 			for(String head: env.getHeads()){
 				heads.add(head);
 			}
+			//safe copy of rooms
 			for(Room r: rooms.values()){
 				roomList.add(r);
 			}
@@ -229,7 +253,8 @@ public class SisyphusI {
 				Person p = env.getPeople().get(person);
 				// grab the room
 				Room r = env.getRooms().get(env.getAssignments().get(person));
-				// create the assignments
+				//if the room already has people in it just add the new person 
+				//otherwise create a new assignment for that room
 				if(assignment.containsKey(r.getRoomNumber())){
 					assignment.get(r.getRoomNumber()).addPerson(p);
 				}

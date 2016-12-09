@@ -13,39 +13,68 @@ public class Person {
 	private HashSet<String> roles;
 	private HashSet<String> coWorkers;
 	
+	/**
+	 * Construct a person with a given name
+	 * @param name
+	 * 			The person's name
+	 */
 	public Person(String name){
 		this.name = name;
+		//roles and coworkers are empty by default
 		roles = new HashSet<String>();
 		coWorkers = new HashSet<String>();
 	}
-	
+	/**
+	 * Give the person a new role
+	 * @param role
+	 * 			the name of the rol to assign
+	 */
 	public void addRole(String role){
 		roles.add(role);
 	}
-	
-	public boolean hasRole(String role){	// This method returns true if this person has the role specified by the argument
-		if(roles.contains(role)){	// given. 'role' should be one of "secretary", "manager", or "researcher".
+	/**
+	 * This method returns true if this person has the role specified 
+	 * 
+	 * @param role
+	 * 			The role ("secretary", "manager",or "researcher")
+	 * @return
+	 */
+	public boolean hasRole(String role){	
+		if(roles.contains(role)){	
 			return true;
 		}
 		else{
 			return false;
 		}
 	}
-	
+	/**
+	 * Get the iterator for the roles the person has
+	 * @return
+	 */
 	public java.util.Iterator<String> rolesIterator(){
 		return roles.iterator();
 	}
-	
-	// This method accepts a person 'p' and adds them to the 'coWorker' Set via the person's name. Since this is a HashSet, it
-	// will only add the person's name if it is not already in the set.
+	/**
+	 * Add a person that this person works with
+	 * @param p
+	 * 			The new coworker
+	 */
 	public void addCoWorker(String p){
 		coWorkers.add(p);
 	}
-	
+	/**
+	 * Tells you whether a person with a given name is this person's coworker
+	 * @param p
+	 * 			The name of the possible coworker
+	 * @return
+	 */
 	public boolean hasCoWorker(String p){
 		return coWorkers.contains(p);
 	}
-	
+	/**
+	 * Get the iterator for this person's coworkers
+	 * @return
+	 */
 	public java.util.Iterator<String> coWorkerIterator(){
 		return coWorkers.iterator();
 	}

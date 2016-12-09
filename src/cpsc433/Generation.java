@@ -102,21 +102,21 @@ public class Generation {
 	 * 			an instance of the environment 
 	 */
 	
-	public void mutate(int numGenSwap, int numFactSwap, int numChange, Environment e){
+	public void mutate(int numGenSwap, int numFactSwap, int numChange){
 		Random rand = new Random();
 		//do specified number of swaps between facts
 		for(int i = 0; i < numGenSwap; i++){
-			this.swap(e);
+			this.swap();
 		}
 		//do the specified number of room swaps in a single fact
 		//these nodes are randomly chosen
 		for(int i = 0; i < numFactSwap; i++){
-			addFact(factAt(rand.nextInt(size())).changeRooms(e));
+			addFact(factAt(rand.nextInt(size())).changeRooms());
 		}
 		//do the specified number of room changes in a single fact
 		//these nodes are also randomly chosen
 		for(int i = 0; i < numChange; i++){
-			addFact(factAt(rand.nextInt(size())).swapRooms(e));
+			addFact(factAt(rand.nextInt(size())).swapRooms());
 		}
 		//increase the generation number
 		genNumber++;
@@ -129,7 +129,7 @@ public class Generation {
 	 * @param e
 	 * 			an instance of the environment
 	 */
-	public void swap(Environment e){
+	public void swap(){
 		Random rand = new Random();
 		//pick two random fact indices
 		int num1 = rand.nextInt(size());

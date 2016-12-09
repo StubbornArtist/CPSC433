@@ -13,37 +13,73 @@ public class Group{
 		heads = new HashSet<String>();
 		members = new HashSet<String>();
 	}
-	
-	public String getName(){	// Returns the name of the group
+	/**
+	 * Gets the name of the group
+	 * @return
+	 */
+	public String getName(){
 		return name;
 	}
-	
-	public void addHead(String person){	// Sets the head of the group
+	/**
+	 * Add a head to this group
+	 * @param person
+	 * 				name of the new group head
+	 */
+	public void addHead(String person){	
 		heads.add(person);
 	}
+	/**
+	 * Get the iterator for the group heads
+	 * @return
+	 */
 	public java.util.Iterator<String> getHeadIterator(){
 		return heads.iterator();
 	}
-	
-	public boolean isHead(String person){	// A method that checks if the given person heads the group
+	/**
+	 * Check if a given person heads this group
+	 * @param person
+	 * 			The person that may be a group head
+	 * @return
+	 */
+	public boolean isHead(String person){
 		return heads.contains(person);
 	}
-	
-	public void addMember(String person){	// Adds a person to the HashSet. If they already exist, they are not added to 
-		members.add(person);		// the set
+	/**
+	 * Add a member to this group
+	 * @param person
+	 * 		The new member of the group		
+	 */
+	public void addMember(String person){	
+		members.add(person);
 	}
-	
-	public boolean hasMember(String person){	// Evaluates if the given person is apart of the 'members' HashSet
+	/**
+	 * Check if a person is a member of this group
+	 * @param person
+	 * 			The person
+	 * @return
+	 */
+	public boolean hasMember(String person){
 		return members.contains(person);
 	}
-	
+	/**
+	 * Get the iterator for the members of this group
+	 * @return
+	 */
 	public Iterator<String> membersIterator(){
 		java.util.Iterator<String> it = members.iterator();
 		return it;
 	}
+	/**
+	 * Get the hashset with all group members
+	 * @return
+	 */
 	public HashSet<String> getMembers(){
 		return members;
 	}
+	/**
+	 * Get the hashset with all group heads
+	 * @return
+	 */
 	public HashSet<String> getHeads(){
 		return heads;
 	}

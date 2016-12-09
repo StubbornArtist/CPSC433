@@ -15,23 +15,43 @@ public class Assignment {
 	private Room room;
 	private HashSet<Person> people;
 	
-	// empty assignment
+	/**
+	 * Default constructor
+	 */
 	public Assignment(){
 		this.room = null;
 		this.people = null;
 	}
 	
-	// assignment consisting of a room and the people occupying the room
+	/**
+	 * Create an assignment from a previously defined assignment
+	 * @param a
+	 * 			The assignment you want a deep copy of
+	 */
 	public Assignment(Assignment a){
 		this.room = a.getRoom();
 		this.people = new HashSet<Person>(a.getPeople());
 	}
+	/**
+	 * Create an assignment from a room and a hashset of people
+	 * @param room
+	 * 			The room the people are assigned to
+	 * @param people
+	 * 			The people in the room
+	 */
 	
 	public Assignment(Room room, HashSet<Person> people ){
 		this.room = room;
 		this.people = people;
 	}
-	
+	/**
+	 * Create an assignment from a room and a list of people
+	 * 
+	 * @param room
+	 * 			The room the people are assigned to
+	 * @param people
+	 * 			The people in the room
+	 */
 	public Assignment(Room room, ArrayList<Person> people){
 		this.room = room;
 		HashSet<Person> temp = new HashSet<Person>();
@@ -41,7 +61,13 @@ public class Assignment {
 		this.people = temp;
 	}
 	
-	// assignment consisting of a room and a single person occupying the room
+	/**
+	 * Create an assignment with a room and a single person
+	 * @param room
+	 * 			The room the person is in
+	 * @param per
+	 * 			The person in the room
+	 */
 	public Assignment(Room room, Person per){
 		this.room = room;
 		this.people = new HashSet<Person>();
@@ -73,11 +99,20 @@ public class Assignment {
 	public void addPerson(Person p){
 		this.people.add(p);
 	}
-	
+	/**
+	 * Indicates whether this assignment has any people in it
+	 * @return
+	 * 		Whether the assignment has people (false) or not (true)
+	 */
 	public boolean isEmpty(){
 		return people.isEmpty();
 	}
 	
+	/**
+	 * The number of people in an assignment
+	 * @return
+	 * 		The number of people
+	 */
 	public int size(){
 		return people.size();
 	}
@@ -109,10 +144,19 @@ public class Assignment {
 		return people.contains(p);
 	}
 	
+	/**
+	 * Get the room that the people in this assignment are assigned to
+	 * @return
+	 * 		The room the assignment refers to
+	 */
 	public Room getRoom(){
 		return room;
 	}
-	
+	/**
+	 * Get a hashset of the people in the assignment
+	 * @return
+	 * 		The people
+	 */
 	public HashSet<Person> getPeople(){
 		return people;
 	}
